@@ -1,0 +1,36 @@
+.jumbotron {
+    background-color: transparent;
+    padding: 20px 0 0px 0;
+}
+
+.btn-outline-primary {
+    color: #33b38d;
+    border-color: #33b38d;
+}
+
+.btn-outline-primary:hover {
+    color: white;
+    border-color: #33b38d;
+    background: #33b38d;
+}
+
+.year-row {
+    background-color: #e6e6e6;
+}
+
+table th {
+    text-align: center;
+}
+
+table {
+    font-size: 80%;
+}
+.no-styling-link,
+.no-styling-link:hover {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+.card {
+    margin-bottom: 10px;
+}

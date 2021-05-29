@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Raad K">
+    <meta name="description" content="Property return calculator">
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <title>Property - raadk.com</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/property_styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <p class="float-right"><a class='btn btn-outline-primary' href="index.html">raadk.com</a></p>
+        <h1>Property investment calculator</h1>
+        <p class="text-small text-danger">
+            <small>
+                Use this at your own risk.
+                The information contained within this site is for informational purposes only
+                and does not constitute financial or investment advice.
+            </small>
+        </p>
+    </div>
+
+
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <a class="no-styling-link" data-toggle="collapse" href="#parameters" role="button"
+                           aria-expanded="false" aria-controls="parameters">
+                            <h2>Parameters</h2>
+                        </a>
+                    </div>
+                    <div class="" id="parameters">
+                        <form>
+                            <div class="form-group">
+                                <label for="purchasePrice">Purchase price</label>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">$</div>
+                                    </div>
+                                    <input type="number" class="form-control" id="purchasePrice" value="500000">
+                                </div>
+                                <small class="form-text text-muted">
+                                    How much are you purchasing the property for?
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="acquisitionCosts">Acquisition costs</label>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">$</div>
+                                    </div>
+                                    <input type="number" class="form-control" id="acquisitionCosts" value="10000">
+                                </div>
+                                <small class="form-text text-muted">
+                                    Any other costs associated with purchasing the property (legal, tax, etc.)?
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="downPayment">Down payment</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" class="form-control" id="downPayment" value="15">
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">%</div>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    How much are you putting down?
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="appreciation">Annual property price appreciation</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" class="form-control" id="appreciation" value="3">
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">%</div>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    How much do you think the property price will go up each year?
+                                </small>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="apr">APR</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" class="form-control" id="apr" value="3">
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">%</div>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    The annual interest rate charged by your mortgage lender.
+                                </small>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="term">Term (years)</label>
+                                <input type="number" class="form-control" id="term" value="30">
+                                <small class="form-text text-muted">
+                                    How long is your mortgage for?
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="years">Years (for analysis)</label>
+                                <input type="number" class="form-control" id="years" value="5">
+                                <small class="form-text text-muted">
+                                    How many years do you want to analyze?
+                                </small>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+        </div>
+        <!--col-->
+
+        <div class="col-xs-12 col-md-8">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Summary</h2>
+                        <br>
+                        <div class='row text-center'>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="appPriceEnd">$-</h4>
+                                <p>Ending property price</p>
+                            </div>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="equityEnd">$-</h4>
+                                <p>Equity</p>
+                            </div>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="roiEnd">$-</h4>
+                                <p>Return on Investment</p>
+                            </div>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="ipmtSum">$-</h4>
+                                <p>Total Interest Payments</p>
+                            </div>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="ppmtSum">$-</h4>
+                                <p>Total Principle Payments</p>
+                            </div>
+                            <div class="stat col-6 col-md-4">
+                                <h4 id="investmentEnd">$-</h4>
+                                <p>Total Investment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Monthly results</h2>
+                    </div>
+                    <div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="monthlyTable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Month</th>
+                                    <th scope="col">IPT</th>
+                                    <th scope="col">PPT</th>
+                                    <th scope="col">PMT</th>
+                                    <th scope="col">Paid Equity</th>
+                                    <th scope="col">App. Price</th>
+                                    <th scope="col">Equity</th>
+                                    <th scope="col">PER</th>
+                                    <th scope="col">Investment</th>
+                                    <th scope="col">ROI</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+        </div>
+        <!--col-->
+
+    </div>
+    <!--row-->
+</div>
+<!--container-->
+
+<script>
+    function calculate_loan_pmt(rate, nper, pv, fv = 0, type = 0) {
+        let pmt;
+        if (rate === 0) {
+            pmt = -1 * (fv + pv) / nper
+        } else {
+            pmt = (rate * (fv + pv * Math.pow(1 + rate, nper))) / ((1 + rate * type) * (1 - Math.pow(1 + rate, nper)));
+        }
+        return pmt;
+    }
+
+    function calculate_loan_ipmt(rate, per, nper, pv, fv = 0, type = 0) {
+        let ipmt = -((Math.pow(1 + rate, per - 1)) * (pv * rate + calculate_loan_pmt(rate, nper, pv, 0, 0)) - calculate_loan_pmt(rate, nper, pv, 0, 0))
+        return ipmt
+    }
+
+    function calculate_loan_ppmt(rate, per, nper, pv, fv = 0, type = 0) {
+        let ppmt = calculate_loan_pmt(rate, nper, pv) - calculate_loan_ipmt(rate, per, nper, pv)
+        return ppmt
+    }
+
+    var formatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0})
+
+    function currencyString(v) {
+        // return Math.round(v).toLocaleString();
+        return formatter.format(v);
+    }
+
+    // console.log(calculate_loan_ipmt(0.045 / 12, 1, 60, -5000))
+    // console.log(calculate_loan_pmt(0.045/12, 60, -5000))
+
+    function runAnalysis() {
+
+        var tableRef = document.getElementById('monthlyTable').getElementsByTagName('tbody')[0];
+        tableRef.innerHTML = '';
+
+        let purchasePrice = document.getElementById('purchasePrice').value / 1.0;
+        let downPaymentPercent = document.getElementById('downPayment').value / 100.0;
+        let acquisitionCosts = document.getElementById('acquisitionCosts').value / 1.0;
+        let appreciation = document.getElementById('appreciation').value / 100.0;
+        let term = document.getElementById('term').value / 1.0;
+        let apr = document.getElementById('apr').value / 100.0;
+
+        let downPayment = purchasePrice * downPaymentPercent;
+
+        let cashIn = downPayment + acquisitionCosts;
+        let loanSize = purchasePrice - downPayment;
+
+        let periods = term * 12;
+
+        let years = document.getElementById('years').value / 1.0;
+        let nMonths = years * 12;
+
+        let monthsArray = [];
+        let ipmtArray = [];
+        let pmtArray = [];
+        let ppmtArray = [];
+        let paidEquityArray = [];
+        let appPriceArray = [];
+        let equityArray = [];
+        let perArray = [];
+        let investmentArray = [];
+        let roiArray = [];
+
+        let ipmt, pmt, ppmt, paidEquity, appPrice, equity, per, investment, roi, newRow, values;
+        let ipmtSum = 0;
+        let ppmtSum = 0;
+        let rowClass = '';
+
+
+        let month = 1
+        for (month; month <= nMonths; month++) {
+
+            monthsArray.push(month);
+
+            ipmt = calculate_loan_ipmt(apr / 12, month, periods, loanSize);
+            ipmtArray.push(ipmt)
+            ipmtSum += ipmt;
+
+            ppmt = calculate_loan_ppmt(apr / 12, month, periods, loanSize);
+            ppmtArray.push(ppmt)
+            ppmtSum += ppmt;
+
+            pmt = calculate_loan_pmt(apr / 12, periods, loanSize);
+            pmtArray.push(pmt)
+
+
+            if (month === 1) {
+                paidEquity = downPayment - ppmt;
+                appPrice = (1 + appreciation / 12) * purchasePrice;
+                investment = pmt - cashIn;
+            } else {
+                paidEquity = paidEquityArray[month - 2] - ppmt;
+                appPrice = appPriceArray[month - 2] * (1 + appreciation / 12);
+                investment = investmentArray[month - 2] + pmt;
+            }
+            paidEquityArray.push(paidEquity);
+            appPriceArray.push(appPrice);
+            investmentArray.push(investment);
+
+            equity = appPrice - purchasePrice + paidEquity;
+            equityArray.push(equity)
+
+            per = equity / appPrice;
+            perArray.push(per);
+
+            if (month % 12 === 0) {
+                roi = (equity + investment) / -investment;
+                roiArray.push(roi);
+                rowClass = 'year-row';
+            } else {
+                roi = '';
+                rowClass = '';
+            }
+
+
+            newRow = tableRef.insertRow(tableRef.rows.length);
+            newRow.className = rowClass;
+            values = `
+            <th scope='row'>${month}</th>
+            <td>${currencyString(ipmt)}</td>
+            <td>${currencyString(ppmt)}</td>
+            <td>${currencyString(pmt)}</td>
+            <td>${currencyString(paidEquity)}</td>
+            <td>${currencyString(appPrice)}</td>
+            <td>${currencyString(equity)}</td>
+            <td>${Math.round(per * 100)}%</td>
+            <td>${currencyString(investment)}</td>
+            <td>${roi ? Math.round(roi * 100) + '%' : ''}</td>
+        `
+            newRow.innerHTML = values;
+        }
+
+        document.getElementById('appPriceEnd').innerHTML = currencyString(appPrice);
+        document.getElementById('equityEnd').innerHTML = currencyString(equity);
+        document.getElementById('ipmtSum').innerHTML = currencyString(ipmtSum);
+        document.getElementById('ppmtSum').innerHTML = currencyString(ppmtSum);
+        document.getElementById('investmentEnd').innerHTML = currencyString(investment);
+        document.getElementById('roiEnd').innerHTML = Math.round(roi * 100) + '%';
+    }
+
+    runAnalysis();
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function () {
+            runAnalysis();
+        });
+    })
+
+</script>
+</body>
+
+</html>
