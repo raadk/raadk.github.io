@@ -150,7 +150,7 @@
                         <div class='row text-center'>
                             <div class="stat col-6 col-md-4">
                                 <h4 id="appPriceEnd">$-</h4>
-                                <p>Ending property price</p>
+                                <p>Property price</p>
                             </div>
                             <div class="stat col-6 col-md-4">
                                 <h4 id="equityEnd">$-</h4>
@@ -162,15 +162,15 @@
                             </div>
                             <div class="stat col-6 col-md-4">
                                 <h4 id="ipmtSum">$-</h4>
-                                <p>Total Interest Payments</p>
+                                <p>Interest Payments</p>
                             </div>
                             <div class="stat col-6 col-md-4">
                                 <h4 id="ppmtSum">$-</h4>
-                                <p>Total Principle Payments</p>
+                                <p>Principle Payments</p>
                             </div>
                             <div class="stat col-6 col-md-4">
                                 <h4 id="investmentEnd">$-</h4>
-                                <p>Total Investment</p>
+                                <p>Investment</p>
                             </div>
                         </div>
                     </div>
@@ -190,11 +190,11 @@
                                 <thead>
                                 <tr>
                                     <th scope="col">Month</th>
-                                    <th scope="col">IPT</th>
-                                    <th scope="col">PPT</th>
-                                    <th scope="col">PMT</th>
+                                    <th scope="col">Interest</th>
+                                    <th scope="col">Principle</th>
+                                    <th scope="col">Payment</th>
                                     <th scope="col">Paid Equity</th>
-                                    <th scope="col">App. Price</th>
+                                    <th scope="col">Property Price</th>
                                     <th scope="col">Equity</th>
                                     <th scope="col">PER</th>
                                     <th scope="col">Investment</th>
@@ -231,14 +231,12 @@
         return pmt;
     }
 
-    function calculate_loan_ipmt(rate, per, nper, pv, fv = 0, type = 0) {
-        let ipmt = -((Math.pow(1 + rate, per - 1)) * (pv * rate + calculate_loan_pmt(rate, nper, pv, 0, 0)) - calculate_loan_pmt(rate, nper, pv, 0, 0))
-        return ipmt
+    function calculate_loan_ipmt(rate, per, nper, pv) {
+        return -((Math.pow(1 + rate, per - 1)) * (pv * rate + calculate_loan_pmt(rate, nper, pv, 0, 0)) - calculate_loan_pmt(rate, nper, pv, 0, 0))
     }
 
-    function calculate_loan_ppmt(rate, per, nper, pv, fv = 0, type = 0) {
-        let ppmt = calculate_loan_pmt(rate, nper, pv) - calculate_loan_ipmt(rate, per, nper, pv)
-        return ppmt
+    function calculate_loan_ppmt(rate, per, nper, pv) {
+        return calculate_loan_pmt(rate, nper, pv) - calculate_loan_ipmt(rate, per, nper, pv)
     }
 
     var formatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0})
@@ -370,6 +368,23 @@
     })
 
 </script>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-98396812-4', 'auto');
+    ga('send', 'pageview');
+</script>
+
 </body>
 
 </html>
