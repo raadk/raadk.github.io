@@ -8,7 +8,9 @@
     border-color: #33b38d;
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
     color: white;
     border-color: #33b38d;
     background: #33b38d;
@@ -25,6 +27,7 @@ table th {
 table {
     font-size: 80%;
 }
+
 .no-styling-link,
 .no-styling-link:hover {
     color: inherit;
