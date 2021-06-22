@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Raad K">
+    <meta name="description" content="Calisthenics workout programs">
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <title>Workouts - raadk.com</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/workouts_styles.css">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@next"></script>
+
+
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <p class="float-right"><a class='btn btn-outline-primary' href="index.html">raadk.com</a></p>
+        <h1>Workout Programs</h1>
+        <p class="text-small text-danger">
+            Use these workouts at your own risk.
+        </p>
+        <p> L3 personal trainer specializing in calisthenics, strength, and movement. <br/>Contact <a
+                href="mailto:raadk@protonmail.com">raadk@protonmail.com</a> for more details</p>
+    </div>
+
+
+    <div id="app" class="section workouts">
+        <div>
+            <h4>Workouts:</h4>
+            <ul>
+                <li v-for="(workout, wo_idx) in workouts" :id="i"><a :href="'#workout-' + wo_idx">{{workout.title}}</a></li>
+            </ul>
+        </div>
+
+        <div v-for="(workout, wo_idx) in workouts" :id="wo_idx" class="workout">
+            <hr>
+
+            <div class="row">
+                <div class="col">
+                    <h2 :id="'workout-' + wo_idx">{{workout.title}}</h2>
+                    <p>{{workout.description}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <!--                d-flex align-items-stretch-->
+                <div v-for="(day, day_idx) in workout.days" class="col workout-day ">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="card-title">
+                                <h4 >{{day.title}}</h4>
+                            </div> <!--/card-title-->
+
+                            <ol class="exercises">
+                                <li v-for="(exercise, exercise_idx) in day.exercises" :id="exercise_idx">
+                                    {{exercise.title}}
+                                    <br>
+
+                                    <em v-if="exercise.time" class="text-muted">{{exercise.time}}</em>
+                                    <em v-else class="text-muted">
+                                        <span v-if="exercise.sets">{{exercise.sets}} sets, </span>
+                                        <span v-if="exercise.reps">{{exercise.reps}} reps </span>
+                                        <span v-if="exercise.holds">{{exercise.holds}} holds </span>
+                                    </em>
+
+                                    <em v-if="exercise.rest" class="text-muted">
+                                        <br>{{exercise.rest}} rest
+
+                                    </em>
+
+
+                                </li>
+                            </ol>
+                        </div>
+                        <!--/card-body-->
+                    </div>
+                    <!--/card-->
+                </div>
+                <!--/workout-day-->
+
+            </div>
+        </div>
+
+    </div>
+    <!--/workouts-->
+
+</div>
+<!--container-->
+
+<script>
+    const WorkoutApp = {
+        data() {
+            return {
+                workouts: [
+                    {
+                        'title': 'Planche and front-lever pull-ups focus',
+                        'description': '7 day cycle',
+                        'days': [
+                            {
+                                'title': 'Day 1 - Push',
+                                'exercises': [
+                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Isometric planche hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Handstand push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'L-sit', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 2 - Pull',
+                                'exercises': [
+                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'One arm pull-up with towel', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Pull-ups', 'reps': '10-15', 'sets': '3', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 3 - Push',
+                                'exercises': [
+                                    {'title': 'Isometric planche hold', 'holds': '5-10s', 'sets': '4', 'rest': '2-3 min'},
+                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Isometric planche hold with band', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'L-sit', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 4 - Pull',
+                                'exercises': [
+                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'One arm pull-up with towel', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Pull-ups', 'reps': '10-15', 'sets': '3', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 5 - Push',
+                                'exercises': [
+                                    {'title': 'Isometric planche hold with band', 'holds': '5-10s', 'sets': '4', 'rest': '2-3 min'},
+                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Pseudo planche hold', 'holds': '10-15s', 'sets': '3', 'rest': '2-3 min'},
+                                    {'title': 'Dips', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 6 - Pull',
+                                'exercises': [
+                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Pull-ups', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Front lever raises', 'reps': '4-6', 'sets': '4-6', 'rest': '2-3 min'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 7 - Legs',
+                                'exercises': [
+                                    {'title': 'Squats', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Lunges', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Hip thrusts', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Handstring curls', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
+                                    {'title': 'Calf raies curls', 'reps': '15-20', 'sets': '4-6', 'rest': '2-3 min' },
+                                ]
+                            },
+
+                        ]
+                    },
+                    {
+                        'title': 'Planche focus',
+                        'description': '7 day cycle',
+                        'days': [
+                            {
+                                'title': 'Day 1 - Planche',
+                                'exercises': [
+                                    {
+                                        'title': 'Isometric planche hold',
+                                        'holds': '10-15s',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Planche push-ups', 'reps': '4', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Handstand push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Pseudo planche hold',
+                                        'holds': '20-30s',
+                                        'sets': '1-2',
+                                        'rest': '1-2 min'
+                                    },
+                                    {'title': 'Handstand alignment drills'},
+                                    {'title': 'Planche protraction drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 2 - Front lever',
+                                'exercises': [
+                                    {'title': 'Front lever pull-ups', 'reps': '2-3', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Front lever isometric hold',
+                                        'holds': '10-20s',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {
+                                        'title': 'Front lever raises',
+                                        'reps': '8-10 reps',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Compression drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 3 - Planche',
+                                'exercises': [
+                                    {'title': 'Planche push-ups', 'reps': '6-8', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Isometric planche hold with band',
+                                        'holds': '15-20s',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Handstand to planche', 'reps': '3-5', 'sets': '2-3', 'rest': '2-3 min'},
+                                    {'title': 'L-sit to planche', 'reps': '3', 'sets': '3', 'rest': '2-3 min'},
+                                    {'title': 'Handstand alignment drills'},
+                                    {'title': 'Planche protraction drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 4 - Front lever',
+                                'exercises': [
+                                    {
+                                        'title': 'Front lever pull-ups with band',
+                                        'reps': '2-3',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {
+                                        'title': 'Front lever raises',
+                                        'reps': '8-10 reps',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Leg lifts (toes to bar)',
+                                        'reps': '10-12 reps',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Compression drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 5 - Planche',
+                                'exercises': [
+                                    {
+                                        'title': 'Isometric planche hold',
+                                        'holds': '10-15s',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Handstand to planche', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Planche push-ups with band',
+                                        'reps': '8-10',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {
+                                        'title': 'Planche hold with band',
+                                        'holds': '20-30s',
+                                        'sets': '1-2',
+                                        'rest': '1-2 min'
+                                    },
+                                    {'title': 'Hollow-body hold', 'holds': '20-30s', 'sets': '3', 'rest': '1 min'},
+                                    {'title': 'Handstand alignment drills'},
+                                    {'title': 'Planche protraction drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 6 - Front lever',
+                                'exercises': [
+                                    {'title': 'Front lever pull-ups', 'reps': '2-3', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {
+                                        'title': 'Front lever isometric hold',
+                                        'holds': '10-20s',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {
+                                        'title': 'Front lever raises',
+                                        'reps': '8-10 reps',
+                                        'sets': '4-6',
+                                        'rest': '2-3 min'
+                                    },
+                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
+                                    {'title': 'Compression drills'},
+                                ]
+                            },
+
+                            {
+                                'title': 'Day 7 - Legs & Cardio',
+                                'exercises': [
+                                    {
+                                        'title': 'Pistol squats',
+                                        'reps': '10',
+                                        'sets': '4-6',
+                                        'rest': '1-2 min'
+                                    },
+                                    {
+                                        'title': 'Lunges',
+                                        'reps': '10-15',
+                                        'sets': '4-6',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg extensions',
+                                        'reps': '10-15',
+                                        'sets': '4-6',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg curls',
+                                        'reps': '10-15',
+                                        'sets': '4-6',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Reverse hypers',
+                                        'reps': '10-15',
+                                        'sets': '4-6',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Calf raises',
+                                        'reps': '10-15',
+                                        'sets': '4-6',
+                                        'rest': '60s'
+                                    },
+                                ]
+                            },
+
+
+                        ]
+                    },
+                    {
+                        'title': 'Push/pull supersets',
+                        'description': '4 day cycle',
+                        'days': [
+                            {
+                                'title': 'Day 1 - Push & Pull',
+                                'exercises': [
+                                    {
+                                        'title': 'One arm chin ups superset with pseudo planche push-ups',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Wide grip pull-ups superset with dips',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Neutral pull-ups superset with diamond push-ups',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Lying back extensions superset with lalanne pushups',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                ]
+                            },
+                            {
+                                'title': 'Day 2 - Legs',
+                                'exercises': [
+                                    {
+                                        'title': 'Front squats superset with squat sits',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Lunges superset with lunge holds',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg press superset with lying leg curls',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg extension superset with seated leg curls',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {'title': 'Calf raises', 'reps': '10', 'sets': '4', 'rest': '60s'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 3 - Core',
+                                'exercises': [
+                                    {
+                                        'title': 'Front squats superset with squat sits',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Lunges superset with lunge holds',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg press superset with lying leg curls',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Leg extension superset with seated leg curls',
+                                        'reps': '10',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {'title': 'Calf raises', 'reps': '10', 'sets': '4', 'rest': '60s'},
+                                ]
+                            },
+                            {
+                                'title': 'Day 4 - Cardio',
+                                'exercises': [
+                                    {'title': 'Run/bike/elliptical/hike/HIIT', 'time': '30-60 min'},
+                                ]
+                            },
+
+                        ]
+                    },
+                    {
+                        'title': 'Core focus',
+                        'description': '5 day cycle',
+                        'days': [
+                            {
+                                'title': 'Day 1 - Core',
+                                'exercises': [
+                                    {
+                                        'title': 'Cardio warmup',
+                                        'time': '5 min'
+                                    },
+                                    {
+                                        'title': 'Plank',
+                                        'holds': '60s',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Side plank',
+                                        'holds': '45s each side',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Hollow-body hold',
+                                        'holds': '45s',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Mountain climbers',
+                                        'holds': '30s',
+                                        'sets': '6',
+                                        'rest': '30s'
+                                    },
+                                    {
+                                        'title': 'Cardio',
+                                        'time': '15-30 min'
+                                    },
+                                    {
+                                        'title': 'Stretch'
+                                    },
+                                ]
+                            },
+                            {
+                                'title': 'Day 2 - Lower-body',
+                                'exercises': [
+                                    {
+                                        'title': 'Cardio warmup',
+                                        'time': '5 min'
+                                    },
+                                    {
+                                        'title': 'Squat',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Lunges',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Standing glute kickbacks with band',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Calf raises',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Side leg lifts with band',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Hip bridge',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '60s'
+                                    },
+                                    {
+                                        'title': 'Cardio',
+                                        'time': '15-30 min'
+                                    },
+                                    {
+                                        'title': 'Stretch'
+                                    },
+                                ]
+                            },
+                            {
+                                'title': 'Day 3 - Lower-body',
+                                'exercises': [
+                                    {
+                                        'title': 'Cardio warmup',
+                                        'time': '5 min'
+                                    },
+                                    {
+                                        'title': 'Push-ups',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Seated cable row',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Shoulder press',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Lat pull-down/pull-ups',
+                                        'reps': '15-20',
+                                        'sets': '4',
+                                        'rest': '90s'
+                                    },
+                                    {
+                                        'title': 'Plank',
+                                        'holds': '60s',
+                                        'sets': '2',
+                                        'rest': '30s'
+                                    },
+                                    {
+                                        'title': 'Side plank',
+                                        'holds': '45s each side',
+                                        'sets': '2',
+                                        'rest': '30s'
+                                    },
+                                    {
+                                        'title': 'Cardio',
+                                        'time': '15-30 min'
+                                    },
+                                    {
+                                        'title': 'Stretch'
+                                    },
+                                ]
+                            },
+                            {
+                                'title': 'Day 4 - Lower-body',
+                                'exercises': [
+                                    {
+                                        'title': 'Cardio warmup',
+                                        'time': '5 min'
+                                    },
+                                    {
+                                        'title': '2:1 HIIT (burpees, jump rope, mountain climber)',
+                                        'reps': '60s work, 30s rest for 10',
+                                        'sets': 3,
+                                        'rest': '1 min between sets',
+                                    },
+                                    {
+                                        'title': 'Warm down Cardio',
+                                        'time': '5 min'
+                                    },
+                                    {
+                                        'title': 'Stretch'
+                                    },
+                                ]
+                            },
+                            {
+                                'title': 'Day 5 - Rest',
+                                'exercises': [
+
+                                ]
+                            }
+
+                        ]
+                    }
+
+
+                ]
+            }
+        }
+    }
+    Vue.createApp(WorkoutApp).mount('#app')
+</script>
+
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-98396812-4', 'auto');
+    ga('send', 'pageview');
+</script>
+
+</body>
+
+</html>
