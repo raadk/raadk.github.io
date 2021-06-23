@@ -1,5 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function (global){(function (){
+// browserify for_bundle.js -o bundle.js
+
 // https://stackoverflow.com/questions/49562978/how-to-use-npm-modules-in-browser-is-possible-to-use-them-even-in-local-pc
 // https://www.npmjs.com/package/yahoo-finance
 var yahooFinance = require('yahoo-finance');
@@ -82582,11 +82584,10 @@ WError.prototype.cause = function we_cause(c)
 exports = module.exports = require('./lib');
 
 },{"./lib":211}],209:[function(require,module,exports){
-// EDITED IN BUNDLE
-const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
-exports.HISTORICAL_CRUMB_URL = PROXY_URL + 'finance.yahoo.com/quote/$SYMBOL/history';
-exports.HISTORICAL_DOWNLOAD_URL = PROXY_URL + 'query1.finance.yahoo.com/v7/finance/download/$SYMBOL';
-exports.SNAPSHOT_URL = PROXY_URL + 'query2.finance.yahoo.com/v10/finance/quoteSummary/$SYMBOL';
+exports.HISTORICAL_CRUMB_URL = 'https://finance.yahoo.com/quote/$SYMBOL/history';
+exports.HISTORICAL_DOWNLOAD_URL = 'https://query1.finance.yahoo.com/v7/finance/download/$SYMBOL';
+exports.SNAPSHOT_URL = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/$SYMBOL';
+
 },{}],210:[function(require,module,exports){
 var os = require('os');
 var util = require('util');
