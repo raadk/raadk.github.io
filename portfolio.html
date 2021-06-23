@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Raad K">
-    <meta name="description" content="Calisthenics workout programs">
+    <meta name="description" content="Portfolio optimization">
     <link rel="shortcut icon" href="favicon.ico"/>
-    <title>Workouts - raadk.com</title>
+    <title>Portfolio optimization - raadk.com</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="css/workouts_styles.css">
+    <link rel="stylesheet" href="css/property_styles.css">
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
             integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -21,653 +21,667 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/vue@next"></script>
-
-
 </head>
 <body>
 <div class="container">
     <div class="jumbotron">
         <p class="float-right"><a class='btn btn-outline-primary' href="index.html">raadk.com</a></p>
-        <h1>Workout Programs</h1>
+        <h1>Portfolio optimization</h1>
         <p class="text-small text-danger">
-            Use these workouts at your own risk.
+            <small>
+                Use this at your own risk.
+                The information contained within this site is for informational purposes only
+                and does not constitute financial or investment advice.
+                <br><em>(this is a pretty poor and buggy port of some old R code I had, runs in-browser though)</em>
+            </small>
+
         </p>
-        <p> L3 personal trainer specializing in calisthenics, strength, and movement. <br/>Contact <a
-                href="mailto:raadk@protonmail.com">raadk@protonmail.com</a> for more details</p>
     </div>
 
 
-    <div id="app" class="section workouts">
-        <div>
-            <h4>Workouts:</h4>
-            <ul>
-                <li v-for="(workout, wo_idx) in workouts" :id="i"><a :href="'#workout-' + wo_idx">{{workout.title}}</a></li>
-            </ul>
-        </div>
-
-        <div v-for="(workout, wo_idx) in workouts" :id="wo_idx" class="workout">
-            <hr>
-
-            <div class="row">
-                <div class="col">
-                    <h2 :id="'workout-' + wo_idx">{{workout.title}}</h2>
-                    <p>{{workout.description}}</p>
-                </div>
-            </div>
-            <div class="row">
-                <!--                d-flex align-items-stretch-->
-                <div v-for="(day, day_idx) in workout.days" class="col workout-day ">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="card-title">
-                                <h4 >{{day.title}}</h4>
-                            </div> <!--/card-title-->
-
-                            <ol class="exercises">
-                                <li v-for="(exercise, exercise_idx) in day.exercises" :id="exercise_idx">
-                                    {{exercise.title}}
-                                    <br>
-
-                                    <em v-if="exercise.time" class="text-muted">{{exercise.time}}</em>
-                                    <em v-else class="text-muted">
-                                        <span v-if="exercise.sets">{{exercise.sets}} sets, </span>
-                                        <span v-if="exercise.reps">{{exercise.reps}} reps </span>
-                                        <span v-if="exercise.holds">{{exercise.holds}} holds </span>
-                                    </em>
-
-                                    <em v-if="exercise.rest" class="text-muted">
-                                        <br>{{exercise.rest}} rest
-
-                                    </em>
-
-
-                                </li>
-                            </ol>
-                        </div>
-                        <!--/card-body-->
+    <div class="row">
+        <div class="col-xs-12 col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <a class="no-styling-link" data-toggle="collapse" href="#parameters" role="button"
+                           aria-expanded="false" aria-controls="parameters">
+                            <h2>Parameters</h2>
+                        </a>
                     </div>
-                    <!--/card-->
-                </div>
-                <!--/workout-day-->
+                    <div class="" id="parameters">
+                        <form id="paramForm">
+                            <div class="form-group ticker-wrap">
+                                <label for="ticker">Tickers</label>
+                                <p class="text-muted">Benchmark</p>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" id="ticker" name="tickers[]"
+                                           value="SPY">
+                                    <!--                                    <a href="#" class="btn text-danger remove-ticker">&times;</a>-->
+                                </div>
+                                <br>
+                                <p class="text-muted">Portfolio</p>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="GOOG">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="AAPL">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="PFE">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="KHC">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="NLY">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="SCI">
+                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-secondary" id="add-ticker">+ Add</button>
+                            <br><br>
 
+
+                            <div class="form-group">
+                                <label for="portfolioValue">Initial portfolio value</label>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">$</div>
+                                    </div>
+                                    <input type="number" class="form-control" id="portfolioValue" value="10000">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="horizon">Optimization horizon</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" class="form-control" id="horizon" value="5">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxPosition">Max position</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" step="0.01" class="form-control" id="maxPosition" value="0.5">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="riskHorizon">Risk horizon</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" class="form-control" id="riskHorizon" value="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxBeta">Max beta</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="startDate">Start date</label>
+                                <div class="input-group mb-2">
+                                    <input type="date" class="form-control" id="startDate" value="2015-01-01">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-block btn-primary">Optimize portfolio</button>
+
+
+                        </form>
+
+                    </div>
+                </div>
+                <!--card-body-->
             </div>
+            <!--card-->
         </div>
+        <!--col-->
+
+        <div class="col-xs-12 col-md-8">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Portfolio Weighting</h2>
+                    </div>
+                    <div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm" id="allocationTable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Asset</th>
+                                    <th scope="col">Weight</th>
+                                    <th scope="col">Value</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr><td colspan="3">Click <strong>Optimize Portfolio</strong> in the parameters panel to run analysis</td></tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Summary</h2>
+                        <br>
+                        <table class="table table-bordered table-sm" id="summaryTable">
+                            <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Portfolio</th>
+                                <th scope="col">Equal Allocation</th>
+                                <th scope="col">Benchmark</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td scope="row">Standard deviation (%)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td scope="row">1-year return (%)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Annualized return (%)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td scope="row">99% conf max 1-year (Basel II) loss (%)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Actual alpha</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td scope="row">Actual beta</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Portfolio</h2>
+                    </div>
+                    <div id="plot_portfolio">
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Assets</h2>
+                    </div>
+                    <div id="plot_asset_prices">
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
+        </div>
+        <!--col-->
 
     </div>
-    <!--/workouts-->
-
+    <!--row-->
 </div>
 <!--container-->
+<script src='js/bundle.js'></script>
+<script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/danfojs@0.2.7/lib/bundle.min.js"></script>
+
 
 <script>
-    const WorkoutApp = {
-        data() {
-            return {
-                workouts: [
-                    {
-                        'title': 'Planche and front-lever pull-ups focus',
-                        'description': '7 day cycle',
-                        'days': [
-                            {
-                                'title': 'Day 1 - Push',
-                                'exercises': [
-                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Isometric planche hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Handstand push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'L-sit', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 2 - Pull',
-                                'exercises': [
-                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'One arm pull-up with towel', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Pull-ups', 'reps': '10-15', 'sets': '3', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 3 - Push',
-                                'exercises': [
-                                    {'title': 'Isometric planche hold', 'holds': '5-10s', 'sets': '4', 'rest': '2-3 min'},
-                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Isometric planche hold with band', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'L-sit', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 4 - Pull',
-                                'exercises': [
-                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'One arm pull-up with towel', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Pull-ups', 'reps': '10-15', 'sets': '3', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 5 - Push',
-                                'exercises': [
-                                    {'title': 'Isometric planche hold with band', 'holds': '5-10s', 'sets': '4', 'rest': '2-3 min'},
-                                    {'title': 'Mechanical Advantage Planche Push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Handstand to planche', 'reps': '1-3', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Pseudo planche hold', 'holds': '10-15s', 'sets': '3', 'rest': '2-3 min'},
-                                    {'title': 'Dips', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 6 - Pull',
-                                'exercises': [
-                                    {'title': 'Front lever pull-ups', 'reps': '2-4', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Front lever isometric hold', 'holds': '10-15s', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Pull-ups', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Front lever raises', 'reps': '4-6', 'sets': '4-6', 'rest': '2-3 min'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 7 - Legs',
-                                'exercises': [
-                                    {'title': 'Squats', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Lunges', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Hip thrusts', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Handstring curls', 'reps': '8-12', 'sets': '4-6', 'rest': '2-3 min' },
-                                    {'title': 'Calf raies curls', 'reps': '15-20', 'sets': '4-6', 'rest': '2-3 min' },
-                                ]
-                            },
 
-                        ]
-                    },
-                    {
-                        'title': 'Planche focus',
-                        'description': '7 day cycle',
-                        'days': [
-                            {
-                                'title': 'Day 1 - Planche',
-                                'exercises': [
-                                    {
-                                        'title': 'Isometric planche hold',
-                                        'holds': '10-15s',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Planche push-ups', 'reps': '4', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Handstand push-ups', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Pseudo planche hold',
-                                        'holds': '20-30s',
-                                        'sets': '1-2',
-                                        'rest': '1-2 min'
-                                    },
-                                    {'title': 'Handstand alignment drills'},
-                                    {'title': 'Planche protraction drills'},
-                                ]
-                            },
+    function concatDataframes(dataframes) {
+        let concat_dfs = dfd.concat({df_list: dataframes, axis: 1})
+        return concat_dfs
+    }
 
-                            {
-                                'title': 'Day 2 - Front lever',
-                                'exercises': [
-                                    {'title': 'Front lever pull-ups', 'reps': '2-3', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Front lever isometric hold',
-                                        'holds': '10-20s',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {
-                                        'title': 'Front lever raises',
-                                        'reps': '8-10 reps',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Compression drills'},
-                                ]
-                            },
+    function mergeDataFrames(dataframes, key = 'date') {
+        let merged_df = dataframes[0]
+        for (let i = 1; i < dataframes.length; i++) {
+            merged_df = dfd.merge({left: merged_df, right: dataframes[i], on: [key], how: "outer"})
+        }
+        merged_df = merged_df.dropna()
+        return merged_df
+    }
 
-                            {
-                                'title': 'Day 3 - Planche',
-                                'exercises': [
-                                    {'title': 'Planche push-ups', 'reps': '6-8', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Isometric planche hold with band',
-                                        'holds': '15-20s',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Handstand to planche', 'reps': '3-5', 'sets': '2-3', 'rest': '2-3 min'},
-                                    {'title': 'L-sit to planche', 'reps': '3', 'sets': '3', 'rest': '2-3 min'},
-                                    {'title': 'Handstand alignment drills'},
-                                    {'title': 'Planche protraction drills'},
-                                ]
-                            },
+    function prepareHistoricalData(quotes) {
+        let tickers = [];
+        let dfs = Object.keys(quotes).map(function (key, index) {
+            let df = new dfd.DataFrame(quotes[key]);
+            df = df.loc({columns: ['date', 'adjClose']})
+            df = df.rename({mapper: {'adjClose': key, 'date': 'date'}})
+            tickers.push(key);
+            return df;
+        })
 
-                            {
-                                'title': 'Day 4 - Front lever',
-                                'exercises': [
-                                    {
-                                        'title': 'Front lever pull-ups with band',
-                                        'reps': '2-3',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {
-                                        'title': 'Front lever raises',
-                                        'reps': '8-10 reps',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Leg lifts (toes to bar)',
-                                        'reps': '10-12 reps',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Compression drills'},
-                                ]
-                            },
+        // let cols = ['date'].concat(tickers);
+        // dfs = concatDataframes(dfs)
+        // dfs = dfs.loc({columns: cols})
 
-                            {
-                                'title': 'Day 5 - Planche',
-                                'exercises': [
-                                    {
-                                        'title': 'Isometric planche hold',
-                                        'holds': '10-15s',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Handstand to planche', 'reps': '3-5', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Planche push-ups with band',
-                                        'reps': '8-10',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {
-                                        'title': 'Planche hold with band',
-                                        'holds': '20-30s',
-                                        'sets': '1-2',
-                                        'rest': '1-2 min'
-                                    },
-                                    {'title': 'Hollow-body hold', 'holds': '20-30s', 'sets': '3', 'rest': '1 min'},
-                                    {'title': 'Handstand alignment drills'},
-                                    {'title': 'Planche protraction drills'},
-                                ]
-                            },
+        dfs = mergeDataFrames(dfs)
+        return dfs;
+    }
 
-                            {
-                                'title': 'Day 6 - Front lever',
-                                'exercises': [
-                                    {'title': 'Front lever pull-ups', 'reps': '2-3', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {
-                                        'title': 'Front lever isometric hold',
-                                        'holds': '10-20s',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {
-                                        'title': 'Front lever raises',
-                                        'reps': '8-10 reps',
-                                        'sets': '4-6',
-                                        'rest': '2-3 min'
-                                    },
-                                    {'title': 'Pull-ups', 'reps': '10-12 reps', 'sets': '4-6', 'rest': '2-3 min'},
-                                    {'title': 'Compression drills'},
-                                ]
-                            },
+    function calculateReturnsForSeries(series) {
+        let nRows = series.count()
+        let end = nRows - 1;
+        let woLatest = series.iloc(['1:'])
+        let woEarliest = series.iloc([':' + end])
+        return woEarliest.sub(woLatest).div(woLatest)
+    }
 
-                            {
-                                'title': 'Day 7 - Legs & Cardio',
-                                'exercises': [
-                                    {
-                                        'title': 'Pistol squats',
-                                        'reps': '10',
-                                        'sets': '4-6',
-                                        'rest': '1-2 min'
-                                    },
-                                    {
-                                        'title': 'Lunges',
-                                        'reps': '10-15',
-                                        'sets': '4-6',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg extensions',
-                                        'reps': '10-15',
-                                        'sets': '4-6',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg curls',
-                                        'reps': '10-15',
-                                        'sets': '4-6',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Reverse hypers',
-                                        'reps': '10-15',
-                                        'sets': '4-6',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Calf raises',
-                                        'reps': '10-15',
-                                        'sets': '4-6',
-                                        'rest': '60s'
-                                    },
-                                ]
-                            },
+    function calculateReturns(data) {
+        let cols = data.columns;
+        let d = {}
+        for (let col of cols) {
+            d[col] = calculateReturnsForSeries(data[col]).values
+        }
+        return new dfd.DataFrame(d)
+    }
 
 
-                        ]
-                    },
-                    {
-                        'title': 'Push/pull supersets',
-                        'description': '4 day cycle',
-                        'days': [
-                            {
-                                'title': 'Day 1 - Push & Pull',
-                                'exercises': [
-                                    {
-                                        'title': 'One arm chin ups superset with pseudo planche push-ups',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Wide grip pull-ups superset with dips',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Neutral pull-ups superset with diamond push-ups',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Lying back extensions superset with lalanne pushups',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                ]
-                            },
-                            {
-                                'title': 'Day 2 - Legs',
-                                'exercises': [
-                                    {
-                                        'title': 'Front squats superset with squat sits',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Lunges superset with lunge holds',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg press superset with lying leg curls',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg extension superset with seated leg curls',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {'title': 'Calf raises', 'reps': '10', 'sets': '4', 'rest': '60s'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 3 - Core',
-                                'exercises': [
-                                    {
-                                        'title': 'Front squats superset with squat sits',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Lunges superset with lunge holds',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg press superset with lying leg curls',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Leg extension superset with seated leg curls',
-                                        'reps': '10',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {'title': 'Calf raises', 'reps': '10', 'sets': '4', 'rest': '60s'},
-                                ]
-                            },
-                            {
-                                'title': 'Day 4 - Cardio',
-                                'exercises': [
-                                    {'title': 'Run/bike/elliptical/hike/HIIT', 'time': '30-60 min'},
-                                ]
-                            },
+    function linearRegression(assetLogReturns, benchmarkLogReturns, daysInYear = 252, rfYear = 0.25) {
+        let rf = rfYear / 100 / daysInYear;
+        let lrf = Math.log(1 + rf);
+        let n = assetLogReturns.count();
+        let beta = 0;
+        let alpha = 0;
 
-                        ]
-                    },
-                    {
-                        'title': 'Core focus',
-                        'description': '5 day cycle',
-                        'days': [
-                            {
-                                'title': 'Day 1 - Core',
-                                'exercises': [
-                                    {
-                                        'title': 'Cardio warmup',
-                                        'time': '5 min'
-                                    },
-                                    {
-                                        'title': 'Plank',
-                                        'holds': '60s',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Side plank',
-                                        'holds': '45s each side',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Hollow-body hold',
-                                        'holds': '45s',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Mountain climbers',
-                                        'holds': '30s',
-                                        'sets': '6',
-                                        'rest': '30s'
-                                    },
-                                    {
-                                        'title': 'Cardio',
-                                        'time': '15-30 min'
-                                    },
-                                    {
-                                        'title': 'Stretch'
-                                    },
-                                ]
-                            },
-                            {
-                                'title': 'Day 2 - Lower-body',
-                                'exercises': [
-                                    {
-                                        'title': 'Cardio warmup',
-                                        'time': '5 min'
-                                    },
-                                    {
-                                        'title': 'Squat',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Lunges',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Standing glute kickbacks with band',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Calf raises',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Side leg lifts with band',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Hip bridge',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '60s'
-                                    },
-                                    {
-                                        'title': 'Cardio',
-                                        'time': '15-30 min'
-                                    },
-                                    {
-                                        'title': 'Stretch'
-                                    },
-                                ]
-                            },
-                            {
-                                'title': 'Day 3 - Lower-body',
-                                'exercises': [
-                                    {
-                                        'title': 'Cardio warmup',
-                                        'time': '5 min'
-                                    },
-                                    {
-                                        'title': 'Push-ups',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Seated cable row',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Shoulder press',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Lat pull-down/pull-ups',
-                                        'reps': '15-20',
-                                        'sets': '4',
-                                        'rest': '90s'
-                                    },
-                                    {
-                                        'title': 'Plank',
-                                        'holds': '60s',
-                                        'sets': '2',
-                                        'rest': '30s'
-                                    },
-                                    {
-                                        'title': 'Side plank',
-                                        'holds': '45s each side',
-                                        'sets': '2',
-                                        'rest': '30s'
-                                    },
-                                    {
-                                        'title': 'Cardio',
-                                        'time': '15-30 min'
-                                    },
-                                    {
-                                        'title': 'Stretch'
-                                    },
-                                ]
-                            },
-                            {
-                                'title': 'Day 4 - Lower-body',
-                                'exercises': [
-                                    {
-                                        'title': 'Cardio warmup',
-                                        'time': '5 min'
-                                    },
-                                    {
-                                        'title': '2:1 HIIT (burpees, jump rope, mountain climber)',
-                                        'reps': '60s work, 30s rest for 10',
-                                        'sets': 3,
-                                        'rest': '1 min between sets',
-                                    },
-                                    {
-                                        'title': 'Warm down Cardio',
-                                        'time': '5 min'
-                                    },
-                                    {
-                                        'title': 'Stretch'
-                                    },
-                                ]
-                            },
-                            {
-                                'title': 'Day 5 - Rest',
-                                'exercises': [
+        let sumA = assetLogReturns.sum() - n * lrf;
+        let sumB = benchmarkLogReturns.sum() - n * lrf;
 
-                                ]
-                            }
+        let aMinusLrf = assetLogReturns.sub(lrf)
+        let bMinusLrf = benchmarkLogReturns.sub(lrf)
 
-                        ]
-                    }
+        let corrAB = aMinusLrf.mul(bMinusLrf).sum();
+        let corrBB = bMinusLrf.mul(bMinusLrf).sum();
+
+        beta = (n * corrAB - sumA * sumB) / (n * corrBB - sumB * sumB);
+        alpha = ((sumA - beta * sumB) / n) * daysInYear;
+
+        return {"alpha": alpha, "beta": beta}
+    }
+
+    function portfolioLinearRegression(logReturns, daysInYear = 252, rfYear = 0.25) {
+        let cols = logReturns.columns;
+        let benchmark = logReturns[cols[0]]
+        let res = []
+        for (let ticker of cols) {
+            let tickerRes = linearRegression(logReturns[ticker], benchmark, daysInYear, rfYear)
+            tickerRes['symbol'] = ticker
+            res.push(tickerRes)
+        }
+        return new dfd.DataFrame(res)
+    }
+
+    function addEmptyRowAndColumn(x) {
+        let x1 = x.map(function (arr) {
+            return arr.slice()
+        })
+        x1.unshift([])
+        for (let i = 1; i < x1.length; i++) {
+            x1[i].unshift(0)
+        }
+        return x1
+    }
+
+    function roundToTwo(num) {
+        https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
+            return +(Math.round(num + "e+2") + "e-2");
+    }
+
+    function efficientFrontier(
+        logReturns, ratingsVector = null, maxAllocation = null, studyOffset = null, studyHorizon = null,
+        riskHorizon = null, maxBeta = null, iterations = 500, daysInYear = 252, rfYear = 0.25) {
+
+        let symbols = logReturns.columns;
 
 
-                ]
+        let rf = rfYear / 100 / daysInYear;
+        let lrf = Math.log(1 + rf);
+
+        let nperiod = logReturns.shape[0];
+        if (studyHorizon !== null) {
+            nperiod = Math.min(studyHorizon * daysInYear, nperiod)
+        }
+
+        let startPeriod = 1;
+        if (studyOffset !== null && studyOffset > 0) {
+            // Changed this from R code
+            startPeriod = Math.max(studyOffset * daysInYear, startPeriod)
+        }
+
+        let rperiod = nperiod - startPeriod
+        if (riskHorizon !== null) {
+            rperiod = Math.min(riskHorizon * daysInYear, rperiod)
+        }
+
+        // TODO Check indexing
+        let returns = logReturns.iloc({rows: [`${startPeriod - 1}:${nperiod}`]})
+
+        let regression = portfolioLinearRegression(returns, daysInYear, rfYear)
+
+        let alpha = regression['alpha']
+        let beta = regression['beta']
+
+        let covariance = window.cov(returns.T.values)
+        covariance = new dfd.DataFrame(covariance, {columns: symbols, index: symbols})
+
+        let expectedLogReturns = returns.mean()
+        let expectedReturns = expectedLogReturns.apply(Math.expm1)
+        let n = covariance.shape[1]
+
+
+        let Amat = [];
+        let meq = 2
+        let bvec = [0, -1]
+        for (let i = 0; i < (n - 1); i++) {
+            bvec.push(+0)
+        }
+
+        for (let i = 0; i < n; i++) {
+            Amat[i] = [1]
+            for (let j = 1; j < n + 1; j++) {
+                if (j === (i + 1)) {
+                    Amat[i].push(1)
+                } else {
+                    Amat[i].push(+0)
+                }
             }
         }
+
+        if (ratingsVector !== null) {
+            // NOT TESTED
+            console.log('Adding ratings vector')
+            for (let i = 0; i < ratingsVector.length; i++) {
+                Amat[i].push(-ratingsVector[i])
+            }
+            bvec.push(-0.1)
+        }
+
+        if (maxAllocation !== null) {
+            console.log('Adding max allocation')
+            if (maxAllocation > 1 || maxAllocation < 0) {
+                alert("Ignoring max allocation, must be between 1 and 0")
+            } else if ((maxAllocation * (n - 1)) < 1) {
+                alert("Ignoring max allocation, must be at least 1 / number of tickers in portfolio")
+            }
+
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < n; j++) {
+                    if (j === i) {
+                        Amat[i].push(-1)
+                    } else {
+                        Amat[i].push(+0)
+                    }
+                }
+            }
+
+            bvec.push(-1)
+            for (let i = 0; i < (n - 1); i++) {
+                bvec.push(-maxAllocation)
+            }
+
+        }
+
+        // Initialize data
+        let maxAbsExpReturn = expectedReturns.apply(Math.abs).max()
+        let limit = 2 * returns.var().max() / maxAbsExpReturn
+        let increment = limit / iterations
+        let loop = 0
+
+        // Initialize vectors
+        let eff = []
+        for (let i = 0; i < iterations; i++) {
+            eff[i] = []
+            for (let j = 0; j < (n + 5); j++) {
+                eff[i].push(null)
+            }
+        }
+        let eff_cols = returns.columns;
+
+        let dvec;
+        let sol;
+
+
+        // Loop
+        for (let i = 0; i < iterations; i++) {
+            dvec = expectedReturns.mul(loop)
+
+            // Make everything 1 indexed to work with quadProg
+            let bvec1 = bvec.slice()
+            bvec1.unshift(0)
+
+            let covariance1 = addEmptyRowAndColumn(covariance.values)
+
+            let dvec1 = dvec.values.slice()
+            dvec1.unshift(0)
+
+            let Amat1 = addEmptyRowAndColumn(Amat)
+
+            sol = window.qp.solveQP(covariance1, dvec1, Amat1, bvec1, meq)
+            let solution = new dfd.Series(sol.solution.slice(1))
+
+            for (let j = 0; j < n; j++) {
+                eff[i][j] = solution.values[j]
+            }
+            eff[i][n] = Math.sqrt(daysInYear * solution.mul(covariance.mul(solution).sum(axis = 1)).sum())
+
+            eff[i][n + 1] = solution.mul(expectedLogReturns.mul(daysInYear).apply(Math.exp).sub(1)).sum()
+            eff[i][n + 2] = eff[i][n + 1] / eff[i][n]
+            eff[i][n + 3] = solution.iloc(['1:']).mul(alpha.iloc(['1:'])).sum()
+            eff[i][n + 4] = solution.iloc(['1:']).mul(beta.iloc(['1:'])).sum()
+
+            loop += increment
+
+        }
+
+        eff_cols = eff_cols.concat(['Std. Dev', 'Exp. Return', 'sharpe', 'alpha', 'beta'])
+        eff = new dfd.DataFrame(eff, {columns: eff_cols})
+
+        return eff;
     }
-    Vue.createApp(WorkoutApp).mount('#app')
-</script>
 
-<script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-    ga('create', 'UA-98396812-4', 'auto');
-    ga('send', 'pageview');
+    var min_tickers = 2 + 1;
+    var max_tickers = 100; //maximum input boxes allowed
+    var wrapper = $(".ticker-wrap"); //Fields wrapper
+    var add_button = $("#add-ticker"); //Add button ID
+    var n_ticker_inputs = 1; //initial text box count
+
+    add_button.click(function (e) {
+        e.preventDefault();
+        if (n_ticker_inputs < max_tickers) { //max input box allowed
+            n_ticker_inputs++; //text box increment
+            wrapper.append(`
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control ticker-input" name="tickers[]" value="">
+                    <a class="btn text-danger remove-ticker" >&times;</a>
+                </div>
+            `);
+        }
+    })
+
+    wrapper.on("click", ".remove-ticker", function (e) { //user click on remove text
+        e.preventDefault();
+        $(this).parent('div').remove();
+        n_ticker_inputs--;
+    })
+
+    function runAnalysis() {
+        let df;
+        let symbols;
+
+        $('#plot_asset_prices').empty()
+        $('#plot_portfolio').empty()
+
+        var tbody = $('#allocationTable tbody')
+        tbody.empty();
+        tbody.append(`<tr><td colspan="3">Loading...</td></tr>`)
+
+        let tickers = [];
+        $(".ticker-input").each(function (index) {
+            let symbol = $(this).val();
+            if (symbol !== "") {
+                tickers.push(symbol);
+            }
+        });
+
+        if (tickers.length < min_tickers) {
+            alert(`Please provide at least ${min_tickers - 1} or more tickers in addition to the benchmark`)
+            return;
+        }
+        let portfolioValue = parseFloat($('#portfolioValue').val());
+        let horizon = parseInt($('#horizon').val());
+        let maxPosition = parseFloat($('#maxPosition').val());
+        let riskHorizon = parseInt($('#riskHorizon').val());
+        let maxBeta = parseFloat($('#maxBeta').val());
+        let startDate = $('#startDate').val();
+
+        console.log("parameters")
+        console.log(`
+        {
+            tickers: ${tickers},
+            horizon: ${horizon},
+            portfolioValue: ${portfolioValue},
+            maxPosition: ${maxPosition},
+            riskHorizon: ${riskHorizon},
+            maxBeta: ${maxBeta},
+            startDate: ${startDate},
+        }`)
+
+        window.yahooFinance.historical({
+            symbols: tickers,
+            from: startDate,
+            to: null,
+            period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
+        }, function (err, quotes) {
+            console.log('Error', err)
+
+            try {
+                df = prepareHistoricalData(quotes)
+            } catch (e) {
+                let error_msg = "Unable to load historical data for the requested tickers. Please check finance.yahoo.com for available tickers."
+                // var tbody = $('#allocationTable tbody')
+                // tbody.empty();
+                // tbody.append(`<tr><td colspan="3" class="text-danger">${error_msg}</td></tr>`)
+                alert(error_msg);
+            }
+            symbols = df.columns.slice(1)
+            // df.print();
+
+            let dates = df.loc({columns: ['date']})
+            let prices = df.loc({columns: symbols})
+            let returns = calculateReturns(prices)
+            let logReturns = returns.apply({callable: Math.log1p})
+            // console.log(logReturns);
+
+
+            // WORKS
+            // let a = df['GOOG'];
+            // console.log(calculateReturnsForSeries(a))
+
+
+            // WORKS BUT SLIGHTLY OFF
+            // let benchmark = logReturns['SPY'];
+            // let asset = logReturns['GOOG'];
+            // let res = linearRegression(asset, benchmark);
+            // console.log(res)
+
+            // WORKS BUT SLIGHTLY OFF
+            // let res = portfolioLinearRegression(logReturns);
+            // res.print()
+            // console.log(res)
+
+            let res = efficientFrontier(logReturns, null, maxPosition, null, horizon, riskHorizon, maxBeta);
+            // res.print()
+
+
+            // Display allocations
+            let satisfyBeta;
+            try {
+                satisfyBeta = res.query({"column": "beta", "is": "<=", "to": maxBeta})
+            } catch {
+                let newMaxBeta = 1.5;
+                alert(`No allocation found with Max Beta ${maxBeta}. Relaxing to ${newMaxBeta}`);
+                satisfyBeta = res.query({"column": "beta", "is": "<=", "to": newMaxBeta})
+            }
+
+            let maxRow = satisfyBeta['sharpe'].argmax()
+            let optimalEfficientFrontier = satisfyBeta.iloc({'rows': [maxRow]})
+            let percentages = optimalEfficientFrontier.loc({columns: symbols.slice(1)})
+            let allocation = percentages.append(percentages.mul(portfolioValue)).T
+            allocation.columns = ['Percentage', 'Value']
+            console.log(allocation)
+
+            var tbody = $('#allocationTable tbody')
+            tbody.empty();
+            let r;
+            for (let s of allocation.index_arr) {
+                r = allocation.loc({rows: [s]}).values[0]
+                tbody.append(`<tr><td>${s}</td><td>${roundToTwo(r[0]) * 100}%</td><td>$${roundToTwo(r[1])}</td></tr>`)
+            }
+
+            // Plot asset prices
+            let layout = {xaxis: {title: 'Date'}, yaxis: {title: 'Adjusted close ($)'}}
+            let df_w_index = df.astype({column: 'date', dtype: 'string'})
+            df_w_index = new dfd.DataFrame(df_w_index.values.reverse(), {columns: df_w_index.columns})
+            df_w_index = df_w_index.set_index({key: 'date'})
+            df_w_index.plot("plot_asset_prices").line({columns: symbols, layout: layout})
+        });
+    }
+
+    $("#paramForm").on('submit', function (e) {
+        e.preventDefault();
+        runAnalysis();
+    })
+
 </script>
 
 </body>
