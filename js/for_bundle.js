@@ -1,5 +1,7 @@
 // browserify for_bundle.js -o bundle.js
 
+// https://stackoverflow.com/questions/47076743/cors-anywhere-herokuapp-com-not-working-503-what-else-can-i-try
+
 // https://stackoverflow.com/questions/49562978/how-to-use-npm-modules-in-browser-is-possible-to-use-them-even-in-local-pc
 // https://www.npmjs.com/package/yahoo-finance
 var yahooFinance = require('yahoo-finance');
