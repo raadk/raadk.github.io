@@ -82584,9 +82584,14 @@ WError.prototype.cause = function we_cause(c)
 exports = module.exports = require('./lib');
 
 },{"./lib":211}],209:[function(require,module,exports){
-exports.HISTORICAL_CRUMB_URL = 'https://finance.yahoo.com/quote/$SYMBOL/history';
-exports.HISTORICAL_DOWNLOAD_URL = 'https://query1.finance.yahoo.com/v7/finance/download/$SYMBOL';
-exports.SNAPSHOT_URL = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/$SYMBOL';
+
+        const PROXY_URL = 'https://cors-anywhere.herokuapp.com/';
+        exports.HISTORICAL_CRUMB_URL = PROXY_URL + 'finance.yahoo.com/quote/$SYMBOL/history';
+        exports.HISTORICAL_DOWNLOAD_URL = PROXY_URL + 'query1.finance.yahoo.com/v7/finance/download/$SYMBOL';
+        exports.SNAPSHOT_URL = PROXY_URL + 'query2.finance.yahoo.com/v10/finance/quoteSummary/$SYMBOL';
+// exports.HISTORICAL_CRUMB_URL = 'https://finance.yahoo.com/quote/$SYMBOL/history';
+// exports.HISTORICAL_DOWNLOAD_URL = 'https://query1.finance.yahoo.com/v7/finance/download/$SYMBOL';
+// exports.SNAPSHOT_URL = 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/$SYMBOL';
 
 },{}],210:[function(require,module,exports){
 var os = require('os');
