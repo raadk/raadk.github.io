@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Raad K">
-    <meta name="description" content="Portfolio optimization">
+    <meta name="description" content="Portfolio optimization using ">
     <link rel="shortcut icon" href="favicon.ico"/>
     <title>Portfolio optimization - raadk.com</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -12,8 +12,9 @@
 
     <link rel="stylesheet" href="css/property_styles.css">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
             integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -32,8 +33,7 @@
                 Use this at your own risk.
                 The information contained within this site is for informational purposes only
                 and does not constitute financial or investment advice.
-                <br><em>(this is a pretty poor and buggy javascript port of some old R code I had, runs in-browser
-                though)</em>
+                <br>This site uses pypfopt, empyrical, and yfinance to optimize a portfolio of assets.
             </small>
 
         </p>
@@ -101,34 +101,33 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="horizon">Optimization horizon</label>
-                                <div class="input-group mb-2">
-                                    <input type="number" class="form-control" id="horizon" value="5">
-                                </div>
-                            </div>
+<!--                            <div class="form-group">-->
+<!--                                <label for="horizon">Optimization horizon</label>-->
+<!--                                <div class="input-group mb-2">-->
+<!--                                    <input type="number" class="form-control" id="horizon" value="5">-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                             <div class="form-group">
                                 <label for="maxPosition">Max position</label>
                                 <div class="input-group mb-2">
-                                    <input type="number" step="0.01" class="form-control" id="maxPosition" value="0.3">
+                                    <input type="number" step="0.01" class="form-control" id="maxPosition" value="1.0">
                                 </div>
                             </div>
 
+<!--                            <div class="form-group">-->
+<!--                                <label for="riskHorizon">Risk horizon</label>-->
+<!--                                <div class="input-group mb-2">-->
+<!--                                    <input type="number" class="form-control" id="riskHorizon" value="1">-->
+<!--                                </div>-->
+<!--                            </div>-->
 
-                            <div class="form-group">
-                                <label for="riskHorizon">Risk horizon</label>
-                                <div class="input-group mb-2">
-                                    <input type="number" class="form-control" id="riskHorizon" value="1">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="maxBeta">Max beta</label>
-                                <div class="input-group mb-2">
-                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">
-                                </div>
-                            </div>
+<!--                            <div class="form-group">-->
+<!--                                <label for="maxBeta">Max beta</label>-->
+<!--                                <div class="input-group mb-2">-->
+<!--                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                             <div class="form-group">
                                 <label for="startDate">Start date</label>
@@ -161,11 +160,6 @@
                         <div class="table-responsive">
                             <table class="table table-bordered table-sm" id="allocationTable">
                                 <thead>
-                                <tr>
-                                    <th scope="col">Asset</th>
-                                    <th scope="col">Weight</th>
-                                    <th scope="col">Value</th>
-                                </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
@@ -190,12 +184,6 @@
                         <br>
                         <table class="table table-bordered table-sm" id="summaryTable">
                             <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">Portfolio</th>
-                                <th scope="col">Equal Allocation</th>
-                                <th scope="col">Benchmark</th>
-                            </tr>
                             </thead>
                             <tbody>
                             </tbody>
@@ -219,18 +207,6 @@
             </div>
             <!--card-->
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">
-                        <h2>Assets</h2>
-                    </div>
-                    <div id="plot_asset_prices">
-                    </div>
-                </div>
-                <!--card-body-->
-            </div>
-            <!--card-->
-
         </div>
         <!--col-->
 
@@ -238,266 +214,15 @@
     <!--row-->
 </div>
 <!--container-->
-<script src='js/bundle.js'></script>
+
 <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/danfojs@0.2.7/lib/bundle.min.js"></script>
 
 
 <script>
-    var daysInYear = 252
-    var rfYear = 0.25
-
-    function concatDataframes(dataframes) {
-        let concat_dfs = dfd.concat({df_list: dataframes, axis: 1})
-        return concat_dfs
-    }
-
-    function mergeDataFrames(dataframes, key = 'date') {
-        let merged_df = dataframes[0]
-        for (let i = 1; i < dataframes.length; i++) {
-            merged_df = dfd.merge({left: merged_df, right: dataframes[i], on: [key], how: "outer"})
-        }
-        merged_df = merged_df.dropna()
-        return merged_df
-    }
-
-    function prepareHistoricalData(quotes) {
-        let tickers = [];
-        let dfs = Object.keys(quotes).map(function (key, index) {
-            let df = new dfd.DataFrame(quotes[key]);
-            df = df.loc({columns: ['date', 'adjClose']})
-            df = df.rename({mapper: {'adjClose': key, 'date': 'date'}})
-            tickers.push(key);
-            return df;
-        })
-
-        // let cols = ['date'].concat(tickers);
-        // dfs = concatDataframes(dfs)
-        // dfs = dfs.loc({columns: cols})
-
-        dfs = mergeDataFrames(dfs)
-        return dfs;
-    }
-
-    function calculateReturnsForSeries(series) {
-        let nRows = series.count()
-        let end = nRows - 1;
-        let woLatest = series.iloc(['1:'])
-        let woEarliest = series.iloc([':' + end])
-        return woEarliest.sub(woLatest).div(woLatest)
-    }
-
-    function calculateReturns(data) {
-        let cols = data.columns;
-        let d = {}
-        for (let col of cols) {
-            d[col] = calculateReturnsForSeries(data[col]).values
-        }
-        return new dfd.DataFrame(d)
-    }
-
-
-    function linearRegression(assetLogReturns, benchmarkLogReturns) {
-        let rf = rfYear / 100 / daysInYear;
-        let lrf = Math.log(1 + rf);
-        let n = assetLogReturns.count();
-
-        let beta = 0;
-        let alpha = 0;
-
-        let sumA = assetLogReturns.sum() - n * lrf;
-        let sumB = benchmarkLogReturns.sum() - n * lrf;
-
-        let aMinusLrf = assetLogReturns.sub(lrf)
-        let bMinusLrf = benchmarkLogReturns.sub(lrf)
-
-        let corrAB = aMinusLrf.mul(bMinusLrf).sum();
-        let corrBB = bMinusLrf.mul(bMinusLrf).sum();
-
-        beta = (n * corrAB - sumA * sumB) / (n * corrBB - sumB * sumB);
-        alpha = ((sumA - beta * sumB) / n) * daysInYear;
-
-        return {"alpha": alpha, "beta": beta}
-    }
-
-    function portfolioLinearRegression(logReturns) {
-        let cols = logReturns.columns;
-        let benchmark = logReturns[cols[0]]
-        let res = []
-        for (let ticker of cols) {
-            let tickerRes = linearRegression(logReturns[ticker], benchmark)
-            tickerRes['symbol'] = ticker
-            res.push(tickerRes)
-        }
-        return new dfd.DataFrame(res)
-    }
-
-    function addEmptyRowAndColumn(x) {
-        let x1 = x.map(function (arr) {
-            return arr.slice()
-        })
-        x1.unshift([])
-        for (let i = 1; i < x1.length; i++) {
-            x1[i].unshift(0)
-        }
-        return x1
-    }
 
     function roundToTwo(num) {
         https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
             return +(Math.round(num + "e+2") + "e-2");
-    }
-
-    function efficientFrontier(
-        logReturns, ratingsVector = null, maxAllocation = null, studyOffset = null, studyHorizon = null,
-        riskHorizon = null, maxBeta = null, iterations = 500) {
-
-        let symbols = logReturns.columns;
-
-
-        let rf = rfYear / 100 / daysInYear;
-        let lrf = Math.log(1 + rf);
-
-        let nperiod = logReturns.shape[0];
-        if (studyHorizon !== null) {
-            nperiod = Math.min(studyHorizon * daysInYear, nperiod)
-        }
-
-        let startPeriod = 1;
-        if (studyOffset !== null && studyOffset > 0) {
-            // Changed this from R code
-            startPeriod = Math.max(studyOffset * daysInYear, startPeriod)
-        }
-
-        let rperiod = nperiod - startPeriod
-        if (riskHorizon !== null) {
-            rperiod = Math.min(riskHorizon * daysInYear, rperiod)
-        }
-
-        // TODO Check indexing
-        let returns = logReturns.iloc({rows: [`${startPeriod - 1}:${nperiod}`]})
-
-        let regression = portfolioLinearRegression(returns)
-
-        let alpha = regression['alpha']
-        let beta = regression['beta']
-
-        let covariance = window.cov(returns.T.values)
-        covariance = new dfd.DataFrame(covariance, {columns: symbols, index: symbols})
-
-        let expectedLogReturns = returns.mean()
-        let expectedReturns = expectedLogReturns.apply(Math.expm1)
-        let n = covariance.shape[1]
-
-
-        let Amat = [];
-        let meq = 2
-        let bvec = [0, -1]
-        for (let i = 0; i < (n - 1); i++) {
-            bvec.push(+0)
-        }
-
-        for (let i = 0; i < n; i++) {
-            Amat[i] = [1]
-            for (let j = 1; j < n + 1; j++) {
-                if (j === (i + 1)) {
-                    Amat[i].push(1)
-                } else {
-                    Amat[i].push(+0)
-                }
-            }
-        }
-
-        if (ratingsVector !== null) {
-            // NOT TESTED
-            console.log('Adding ratings vector')
-            for (let i = 0; i < ratingsVector.length; i++) {
-                Amat[i].push(-ratingsVector[i])
-            }
-            bvec.push(-0.1)
-        }
-
-        if (maxAllocation !== null) {
-            console.log('Adding max allocation')
-            if (maxAllocation > 1 || maxAllocation < 0) {
-                alert("Ignoring max allocation, must be between 1 and 0")
-            } else if ((maxAllocation * (n - 1)) < 1) {
-                alert("Ignoring max allocation, must be at least 1 / number of tickers in portfolio")
-            }
-
-            for (let i = 0; i < n; i++) {
-                for (let j = 0; j < n; j++) {
-                    if (j === i) {
-                        Amat[i].push(-1)
-                    } else {
-                        Amat[i].push(+0)
-                    }
-                }
-            }
-
-            bvec.push(-1)
-            for (let i = 0; i < (n - 1); i++) {
-                bvec.push(-maxAllocation)
-            }
-
-        }
-
-        // Initialize data
-        let maxAbsExpReturn = expectedReturns.apply(Math.abs).max()
-        let limit = 2 * returns.var().max() / maxAbsExpReturn
-        let increment = limit / iterations
-        let loop = 0
-
-        // Initialize vectors
-        let eff = []
-        for (let i = 0; i < iterations; i++) {
-            eff[i] = []
-            for (let j = 0; j < (n + 5); j++) {
-                eff[i].push(null)
-            }
-        }
-        let eff_cols = returns.columns;
-
-        let dvec;
-        let sol;
-
-
-        // Loop
-        for (let i = 0; i < iterations; i++) {
-            dvec = expectedReturns.mul(loop)
-
-            // Make everything 1 indexed to work with quadProg
-            let bvec1 = bvec.slice()
-            bvec1.unshift(0)
-
-            let covariance1 = addEmptyRowAndColumn(covariance.values)
-
-            let dvec1 = dvec.values.slice()
-            dvec1.unshift(0)
-
-            let Amat1 = addEmptyRowAndColumn(Amat)
-
-            sol = window.qp.solveQP(covariance1, dvec1, Amat1, bvec1, meq)
-            let solution = new dfd.Series(sol.solution.slice(1))
-
-            for (let j = 0; j < n; j++) {
-                eff[i][j] = solution.values[j]
-            }
-            eff[i][n] = Math.sqrt(daysInYear * solution.mul(covariance.mul(solution).sum(axis = 1)).sum())
-
-            eff[i][n + 1] = solution.mul(expectedLogReturns.mul(daysInYear).apply(Math.exp).sub(1)).sum()
-            eff[i][n + 2] = eff[i][n + 1] / eff[i][n]
-            eff[i][n + 3] = solution.iloc(['1:']).mul(alpha.iloc(['1:'])).sum()
-            eff[i][n + 4] = solution.iloc(['1:']).mul(beta.iloc(['1:'])).sum()
-
-            loop += increment
-
-        }
-
-        eff_cols = eff_cols.concat(['Std. Dev', 'Exp. Return', 'sharpe', 'alpha', 'beta'])
-        eff = new dfd.DataFrame(eff, {columns: eff_cols})
-
-        return eff;
     }
 
 
@@ -526,24 +251,46 @@
         n_ticker_inputs--;
     })
 
-    function reverseDataframe(d) {
-        return new dfd.DataFrame(d.values.reverse(), {columns: d.columns, index: d.index.slice().reverse()})
+    function writeTable(tableId, tableData, skipFirstHeading=true) {
+        let obj
+
+        let thead = $(tableId + ' thead')
+        obj = tableData[0]
+        let tr = "";
+        let i = 0
+        for (let [key, value] of Object.entries(obj)) {
+            if (!skipFirstHeading || i !== 0) {
+                tr += "<td>" + key + "</td>"
+            } else {
+                tr += "<td></td>"
+            }
+            i++;
+        }
+        tr += ""
+        thead.append(tr);
+
+
+        let tbody = $(tableId + ' tbody')
+        for (let i = 0; i < tableData.length; i++) {
+            obj = tableData[i]
+            let tr = "<tr>";
+            for (let [key, value] of Object.entries(obj)) {
+                tr += "<td>" + value + "</td>"
+            }
+            tbody.append(tr);
+        }
     }
 
-    // REMOVE ME
-    var logReturns;
-    var cumReturns;
-    var percentages;
-    var dateCol;
-    var dftmp;
+    function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+    }
+
 
 
     var allocationTableBody = $('#allocationTable tbody')
     var summaryTableBody = $('#summaryTable tbody')
 
     function runAnalysis() {
-        let df;
-        let symbols;
 
         $('#plot_asset_prices').empty()
         $('#plot_portfolio').empty()
@@ -565,199 +312,85 @@
             return;
         }
         let portfolioValue = parseFloat($('#portfolioValue').val());
-        let horizon = parseInt($('#horizon').val());
         let maxPosition = parseFloat($('#maxPosition').val());
-        let riskHorizon = parseInt($('#riskHorizon').val());
-        let maxBeta = parseFloat($('#maxBeta').val());
         let startDate = $('#startDate').val();
 
+        // let horizon = parseInt($('#horizon').val());
+        // let riskHorizon = parseInt($('#riskHorizon').val());
+        // let maxBeta = parseFloat($('#maxBeta').val());
+
+        let parameters = {
+            tickers: tickers,
+            portfolioValue: portfolioValue,
+            maxPosition: maxPosition,
+            startDate: startDate,
+        }
+
         console.log("parameters")
-        console.log(`
-        {
-            tickers: ${tickers},
-            horizon: ${horizon},
-            portfolioValue: ${portfolioValue},
-            maxPosition: ${maxPosition},
-            riskHorizon: ${riskHorizon},
-            maxBeta: ${maxBeta},
-            startDate: ${startDate},
-        }`)
+        console.log(parameters)
 
-        window.yahooFinance.historical({
-            symbols: tickers,
-            from: startDate,
-            to: null,
-            period: 'd'  // 'd' (daily), 'w' (weekly), 'm' (monthly), 'v' (dividends only)
-        }, function (err, quotes) {
+        var str_params = $.param( parameters );
+        // let apiURL = 'http://127.0.0.1:8000/portfolio?' + str_params
+        let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
-            try {
-                df = prepareHistoricalData(quotes)
-            } catch (e) {
-                let error_msg = "Unable to load historical data for the requested tickers. Please check finance.yahoo.com for available tickers."
-                alert(error_msg);
+        $.get(apiURL, function(data) {
+            if (!data['success']) {
+                allocationTableBody.empty()
+                allocationTableBody.append(`<tr><td colspan="3">Error. ${data['error']}</td></tr>`)
+                return;
             }
-            symbols = df.columns.slice(1)
-            df = df.astype({column: 'date', dtype: 'string'})
-            df = df.set_index({key: 'date'})
+            console.log(data)
+            let summary = JSON.parse(data['summary']);
+            writeTable('#summaryTable', summary);
 
-            let dates = df.index
-            let prices = df.loc({columns: symbols})
-            let returns = calculateReturns(prices)
-            logReturns = returns.apply({callable: Math.log1p})
+            let cumReturns = JSON.parse(data['cum_returns'])
+            let prices = JSON.parse(data['prices'])
 
-            let res = efficientFrontier(logReturns, null, maxPosition, null, horizon, riskHorizon, maxBeta);
-
-            // Display allocations
-            let satisfyBeta;
-            try {
-                satisfyBeta = res.query({"column": "beta", "is": "<=", "to": maxBeta})
-            } catch {
-                let newMaxBeta = 1.5;
-                alert(`No allocation found with Max Beta ${maxBeta}. Relaxing to ${newMaxBeta}`);
-                satisfyBeta = res.query({"column": "beta", "is": "<=", "to": newMaxBeta})
-            }
-
-            let maxRow = satisfyBeta['sharpe'].argmax()
-            let optimalEfficientFrontier = satisfyBeta.iloc({'rows': [maxRow]})
-            percentages = optimalEfficientFrontier.loc({columns: symbols.slice(1)})
-            let allocation = percentages.append(percentages.mul(portfolioValue)).T
-            allocation.columns = ['Percentage', 'Value']
-
+            let allocation = JSON.parse(data['allocation']['allocation'])
             allocationTableBody.empty();
-            let r;
-            for (let s of allocation.index_arr) {
-                r = allocation.loc({rows: [s]}).values[0]
-                allocationTableBody.append(`<tr><td>${s}</td><td>${roundToTwo(r[0]) * 100}%</td><td>$${roundToTwo(r[1])}</td></tr>`)
-            }
+            writeTable('#allocationTable', allocation);
+
+            let remaining_funds = JSON.parse(data['allocation']['remaining_funds'])
+            allocationTableBody.append(`<tr> <td colspan="5"><em>Remaining funds $${remaining_funds}</em></td></tr>`)
+
+            var data = [
+                {
+                    x: unpack(cumReturns, "Date"),
+                    y: unpack(cumReturns, "Portfolio"),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Portfolio',
+                    line: {color: '#33b38d'}
+                },
+                {
+                    x: unpack(cumReturns, "Date"),
+                    y: unpack(cumReturns, "Equal Allocation"),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Equal Allocation',
+                    line: {color: '#17becf'}
+                },
+                {
+                    x: unpack(cumReturns, "Date"),
+                    y: unpack(cumReturns, "Benchmark"),
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Benchmark',
+                    line: {color: '#888888'}
+                }
+            ];
+            var layout = {
+                // title: 'Cumulative returns',
+                legend: {"orientation": "h"},
+                yaxis: {title: 'Cumulative return'}
+            };
+
+            Plotly.newPlot('plot_portfolio', data, layout);
+        })
 
 
-            // Plot asset prices
-            let layout = {xaxis: {title: 'Date'}, yaxis: {title: 'Adjusted close ($)'}}
-            let df_w_index = df.copy()
-            df_w_index = reverseDataframe(df_w_index)
-            df_w_index.plot("plot_asset_prices").line({columns: symbols, layout: layout})
-
-            // Cumulative returns
-            cumReturns = reverseDataframe(reverseDataframe(logReturns).cumsum())
-
-            // TODO Original code had exp not expm1
-            cumReturns = cumReturns.apply({callable: Math.exp})
-            dateCol = df.index
-            dateCol = dateCol.slice(0, -1)
-            cumReturns = cumReturns.set_index({"key": dateCol})
-
-
-            // Hacky matrix mul
-            let weightings = new dfd.DataFrame(Array(cumReturns.shape[0]).fill(percentages.round(4).values[0]))
-            let pfolVal = cumReturns.iloc({columns: ['1:']}).mul(weightings).sum(axis = 0)
-
-            let n = pfolVal.shape[0]
-            let k = weightings.shape[1]
-
-            let equalWeightings = new dfd.DataFrame(Array(n).fill(Array(k).fill(1 / k)))
-            let eqPfolVal = cumReturns.iloc({columns: ['1:']}).mul(equalWeightings).sum(axis = 0)
-
-            let indexVal = cumReturns[cumReturns.columns[0]]
-            let pfolReturn = pfolVal.iloc([`:${n - 1}`]).div(pfolVal.iloc(['1:']))
-            let pfolLogReturn = pfolReturn.apply(Math.log)
-
-            let eqPfolReturn = eqPfolVal.iloc([`:${n - 1}`]).div(eqPfolVal.iloc(['1:']))
-            let eqPfolLogReturn = eqPfolReturn.apply(Math.log)
-
-            let indexLogReturn = logReturns[cumReturns.columns[0]].iloc([`:${n - 1}`])
-            let indexReturn = indexLogReturn.apply(Math.expm1)
-
-            let riskPeriods = daysInYear * riskHorizon
-            let indexRegression = linearRegression(
-                indexLogReturn.iloc([`:${riskPeriods}`]),
-                indexLogReturn.iloc([`:${riskPeriods}`]),
-            )
-
-            let pfolRegression = linearRegression(
-                pfolLogReturn.iloc([`:${riskPeriods}`]),
-                indexLogReturn.iloc([`:${riskPeriods}`]),
-            )
-
-            let eqPfolRegression = linearRegression(
-                eqPfolLogReturn.iloc([`:${riskPeriods}`]),
-                indexLogReturn.iloc([`:${riskPeriods}`]),
-            )
-
-            // Standard deviation
-            let sdPortfolio = pfolLogReturn.iloc([`:${riskPeriods}`]).std() * Math.sqrt(daysInYear)
-            let sdEqPortfolio = eqPfolLogReturn.iloc([`:${riskPeriods}`]).std() * Math.sqrt(daysInYear)
-            let sdIndex = indexLogReturn.iloc([`:${riskPeriods}`]).std() * Math.sqrt(daysInYear)
-
-
-            // Annualized return
-            let annReturnPfol = Math.exp(pfolLogReturn.mean() * daysInYear) - 1
-            let annReturnEqPfol = Math.exp(eqPfolLogReturn.mean() * daysInYear) - 1
-            let annReturnIndex = Math.exp(indexLogReturn.mean() * daysInYear) - 1
-
-            // One year return
-            let oneYearReturnPfol = Math.exp(pfolLogReturn.iloc([`:${daysInYear}`]).sum()) - 1
-            let oneYearReturnEqPfol = Math.exp(eqPfolLogReturn.iloc([`:${daysInYear}`]).sum()) - 1
-            let oneYearReturnIndex = Math.exp(indexLogReturn.iloc([`:${daysInYear}`]).sum()) - 1
-
-            // One year loss
-            let oneYearLossPfol = Math.exp(pfolLogReturn.iloc([`:${daysInYear}`]).sum()) - 1 - 2.33 * sdPortfolio
-            let oneYearLossEqPfol = Math.exp(eqPfolLogReturn.iloc([`:${daysInYear}`]).sum()) - 1 - 2.33 * sdEqPortfolio
-            let oneYearLossIndex = Math.exp(indexLogReturn.iloc([`:${daysInYear}`]).sum()) - 1 - 2.33 * sdIndex
-
-            summaryTableBody.append(`<tr><td scope="row">Standard deviation (%)</td>
-                <td>${roundToTwo(sdPortfolio * 100)}</td>
-                <td>${roundToTwo(sdEqPortfolio * 100)}</td>
-                <td>${roundToTwo(sdIndex * 100)}</td>
-            </tr>`)
-
-            summaryTableBody.append(`<tr><td scope="row">1-year return (%)</td>
-                <td>${roundToTwo(100 * oneYearReturnPfol)}</td>
-                <td>${roundToTwo(100 * oneYearReturnEqPfol)}</td>
-                <td>${roundToTwo(100 * oneYearReturnIndex)}</td>
-            </tr>`)
-
-            summaryTableBody.append(`<tr><td scope="row">Annualized return (%)</td>
-                <td>${roundToTwo(100 * annReturnPfol)}</td>
-                <td>${roundToTwo(100 * annReturnEqPfol)}</td>
-                <td>${roundToTwo(100 * annReturnIndex)}</td>
-            </tr>`)
-
-            // summaryTableBody.append(`<tr><td scope="row">99% conf max 1-year (Basel II) loss (%)</td>
-            //     <td>${roundToTwo(100 * oneYearLossPfol)}</td>
-            //     <td>${roundToTwo(100 * oneYearLossEqPfol)}</td>
-            //     <td>${roundToTwo(100 * oneYearLossIndex)}</td>
-            // </tr>`)
-
-            // OLD CODE MULTIPLIED BY 100
-            summaryTableBody.append(`<tr><td scope="row">Actual alpha</td>
-                <td>${roundToTwo(100 * pfolRegression['alpha'])}</td>
-                <td>${roundToTwo(100 * eqPfolRegression['alpha'])}</td>
-                <td>${roundToTwo(100 * indexRegression['alpha'])}</td>
-            </tr>`)
-
-            summaryTableBody.append(`<tr><td scope="row">Actual beta</td>
-                <td>${roundToTwo(pfolRegression['beta'])}</td>
-                <td>${roundToTwo(eqPfolRegression['beta'])}</td>
-                <td>${roundToTwo(indexRegression['beta'])}</td>
-            </tr>`)
-
-
-            // Plot
-            let comparison = new dfd.DataFrame({
-                date: dateCol, portfolio: pfolVal.values,
-                equalAllocation: eqPfolVal.values, benchmark: indexVal.values
-            })
-
-            comparison = reverseDataframe(comparison)
-            comparison = comparison.set_index({key: 'date'})
-            let layout2 = {xaxis: {title: 'Date'}, yaxis: {title: 'Cumulative return (%)'}}
-            comparison.plot("plot_portfolio").line({layout: layout2})
-
-
-        });
     }
 
-    // runAnalysis();
 
 
     $("#paramForm").on('submit', function (e) {
@@ -767,22 +400,22 @@
 
 </script>
 
-<script>
-    (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function () {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+<!--<script>-->
+<!--    (function (i, s, o, g, r, a, m) {-->
+<!--        i['GoogleAnalyticsObject'] = r;-->
+<!--        i[r] = i[r] || function () {-->
+<!--            (i[r].q = i[r].q || []).push(arguments)-->
+<!--        }, i[r].l = 1 * new Date();-->
+<!--        a = s.createElement(o),-->
+<!--            m = s.getElementsByTagName(o)[0];-->
+<!--        a.async = 1;-->
+<!--        a.src = g;-->
+<!--        m.parentNode.insertBefore(a, m)-->
+<!--    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');-->
 
-    ga('create', 'UA-98396812-4', 'auto');
-    ga('send', 'pageview');
-</script>
+<!--    ga('create', 'UA-98396812-4', 'auto');-->
+<!--    ga('send', 'pageview');-->
+<!--</script>-->
 
 
 </body>
