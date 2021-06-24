@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Raad K">
-    <meta name="description" content="Find a portfolio of assets on the efficient frontier that maximizes the sharpe ratio.">
+    <meta name="description"
+          content="Find a portfolio of assets on the efficient frontier that maximizes the sharpe ratio.">
     <link rel="shortcut icon" href="favicon.ico"/>
     <title>Portfolio optimization - raadk.com</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -33,7 +34,8 @@
                 Use this at your own risk.
                 The information contained within this site is for informational purposes only
                 and does not constitute financial or investment advice.
-                <br>This site uses pypfopt, empyrical, and yfinance to find a portfolio of assets that maximizes the sharpe ratio.
+                <br>This site uses pypfopt, empyrical, and yfinance to find a portfolio of assets that maximizes the
+                sharpe ratio.
             </small>
 
         </p>
@@ -101,33 +103,41 @@
                                 </div>
                             </div>
 
-<!--                            <div class="form-group">-->
-<!--                                <label for="horizon">Optimization horizon</label>-->
-<!--                                <div class="input-group mb-2">-->
-<!--                                    <input type="number" class="form-control" id="horizon" value="5">-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <!--                            <div class="form-group">-->
+                            <!--                                <label for="horizon">Optimization horizon</label>-->
+                            <!--                                <div class="input-group mb-2">-->
+                            <!--                                    <input type="number" class="form-control" id="horizon" value="5">-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
                             <div class="form-group">
-                                <label for="maxPosition">Max position</label>
+                                <label for="minPosition">Min position weight</label>
+                                <div class="input-group mb-2">
+                                    <input type="number" step="0.01" class="form-control" id="minPosition" value="0">
+                                </div>
+                                <small id="minPositionHelp" class="form-text text-muted">Negative allows for shorting</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="maxPosition">Max position weight</label>
                                 <div class="input-group mb-2">
                                     <input type="number" step="0.01" class="form-control" id="maxPosition" value="1.0">
                                 </div>
                             </div>
 
-<!--                            <div class="form-group">-->
-<!--                                <label for="riskHorizon">Risk horizon</label>-->
-<!--                                <div class="input-group mb-2">-->
-<!--                                    <input type="number" class="form-control" id="riskHorizon" value="1">-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <!--                            <div class="form-group">-->
+                            <!--                                <label for="riskHorizon">Risk horizon</label>-->
+                            <!--                                <div class="input-group mb-2">-->
+                            <!--                                    <input type="number" class="form-control" id="riskHorizon" value="1">-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
-<!--                            <div class="form-group">-->
-<!--                                <label for="maxBeta">Max beta</label>-->
-<!--                                <div class="input-group mb-2">-->
-<!--                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <!--                            <div class="form-group">-->
+                            <!--                                <label for="maxBeta">Max beta</label>-->
+                            <!--                                <div class="input-group mb-2">-->
+                            <!--                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
 
                             <div class="form-group">
                                 <label for="startDate">Start date</label>
@@ -251,7 +261,7 @@
         n_ticker_inputs--;
     })
 
-    function writeTable(tableId, tableData, skipFirstHeading=true) {
+    function writeTable(tableId, tableData, skipFirstHeading = true) {
         let obj
 
         let thead = $(tableId + ' thead')
@@ -282,9 +292,10 @@
     }
 
     function unpack(rows, key) {
-        return rows.map(function(row) { return row[key]; });
+        return rows.map(function (row) {
+            return row[key];
+        });
     }
-
 
 
     var allocationTableBody = $('#allocationTable tbody')
@@ -320,6 +331,7 @@
             return;
         }
         let portfolioValue = parseFloat($('#portfolioValue').val());
+        let minPosition = parseFloat($('#minPosition').val());
         let maxPosition = parseFloat($('#maxPosition').val());
         let startDate = $('#startDate').val();
 
@@ -330,6 +342,7 @@
         let parameters = {
             tickers: tickers,
             portfolioValue: portfolioValue,
+            minPosition: minPosition,
             maxPosition: maxPosition,
             startDate: startDate,
         }
@@ -337,11 +350,11 @@
         console.log("parameters")
         console.log(parameters)
 
-        var str_params = $.param( parameters );
+        var str_params = $.param(parameters);
         // let apiURL = 'http://127.0.0.1:8000/portfolio?' + str_params
         let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
-        $.get(apiURL, function(data) {
+        $.get(apiURL, function (data) {
 
             clearTables()
             if (!data['success']) {
@@ -398,7 +411,6 @@
 
 
     }
-
 
 
     $("#paramForm").on('submit', function (e) {
