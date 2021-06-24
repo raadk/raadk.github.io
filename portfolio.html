@@ -288,15 +288,23 @@
 
 
     var allocationTableBody = $('#allocationTable tbody')
+    var allocationTableHead = $('#allocationTable thead')
+
     var summaryTableBody = $('#summaryTable tbody')
+    var summaryTableHead = $('#summaryTable thead')
+
+    function clearTables() {
+        allocationTableBody.empty()
+        allocationTableHead.empty()
+        summaryTableHead.empty()
+        summaryTableBody.empty()
+    }
 
     function runAnalysis() {
 
-        $('#plot_asset_prices').empty()
         $('#plot_portfolio').empty()
 
-        allocationTableBody.empty();
-        summaryTableBody.empty();
+        clearTables()
         allocationTableBody.append(`<tr><td colspan="3">Loading...</td></tr>`)
 
         let tickers = [];
@@ -335,19 +343,18 @@
 
         $.get(apiURL, function(data) {
             if (!data['success']) {
-                allocationTableBody.empty()
+                clearTables()
                 allocationTableBody.append(`<tr><td colspan="3">Error. ${data['error']}</td></tr>`)
                 return;
             }
-            console.log(data)
             let summary = JSON.parse(data['summary']);
+            console.log(summary)
             writeTable('#summaryTable', summary);
 
             let cumReturns = JSON.parse(data['cum_returns'])
             let prices = JSON.parse(data['prices'])
 
             let allocation = JSON.parse(data['allocation']['allocation'])
-            allocationTableBody.empty();
             writeTable('#allocationTable', allocation);
 
             let remaining_funds = JSON.parse(data['allocation']['remaining_funds'])
