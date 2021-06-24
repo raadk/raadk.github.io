@@ -342,8 +342,9 @@
         let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
         $.get(apiURL, function(data) {
+
+            clearTables()
             if (!data['success']) {
-                clearTables()
                 allocationTableBody.append(`<tr><td colspan="3">Error. ${data['error']}</td></tr>`)
                 return;
             }
