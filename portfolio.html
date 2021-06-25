@@ -92,62 +92,73 @@
                             <button class="btn btn-sm btn-secondary" id="add-ticker">+ Add</button>
                             <br><br>
 
-
                             <div class="form-group">
                                 <label for="portfolioValue">Initial portfolio value</label>
                                 <div class="input-group mb-2">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">$</div>
                                     </div>
-                                    <input type="number" class="form-control" id="portfolioValue" value="10000">
+                                    <input type="number" class="form-control" id="portfolioValue" value="1000">
                                 </div>
                             </div>
 
-                            <!--                            <div class="form-group">-->
-                            <!--                                <label for="horizon">Optimization horizon</label>-->
-                            <!--                                <div class="input-group mb-2">-->
-                            <!--                                    <input type="number" class="form-control" id="horizon" value="5">-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
+                            <a class="" data-toggle="collapse" href="#advancedParams" id="showAdvancedParams"
+                               role="button" aria-expanded="false" aria-controls="advancedParams">
+                                <span id="showText">Show</span> advanced params
+                            </a>
 
-                            <div class="form-group">
-                                <label for="minPosition">Min position weight</label>
-                                <div class="input-group mb-2">
-                                    <input type="number" step="0.01" class="form-control" id="minPosition" value="0">
+                            <br><br>
+
+                            <div class="collapse multi-collapse" id="advancedParams">
+
+                                <div class="form-group">
+                                    <label for="minPosition">Min position weight</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" step="0.01" class="form-control" id="minPosition"
+                                               value="0">
+                                    </div>
+                                    <small id="minPositionHelp" class="form-text text-muted">Negative allows for
+                                        shorting</small>
                                 </div>
-                                <small id="minPositionHelp" class="form-text text-muted">Negative allows for shorting</small>
-                            </div>
 
-                            <div class="form-group">
-                                <label for="maxPosition">Max position weight</label>
-                                <div class="input-group mb-2">
-                                    <input type="number" step="0.01" class="form-control" id="maxPosition" value="1.0">
+                                <div class="form-group">
+                                    <label for="maxPosition">Max position weight</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" step="0.01" class="form-control" id="maxPosition"
+                                               value="1.0">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!--                            <div class="form-group">-->
-                            <!--                                <label for="riskHorizon">Risk horizon</label>-->
-                            <!--                                <div class="input-group mb-2">-->
-                            <!--                                    <input type="number" class="form-control" id="riskHorizon" value="1">-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
-
-                            <!--                            <div class="form-group">-->
-                            <!--                                <label for="maxBeta">Max beta</label>-->
-                            <!--                                <div class="input-group mb-2">-->
-                            <!--                                    <input type="number" step="0.01" class="form-control" id="maxBeta" value="1">-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
-
-                            <div class="form-group">
-                                <label for="startDate">Start date</label>
-                                <div class="input-group mb-2">
-                                    <input type="date" class="form-control" id="startDate" value="2015-01-01">
+                                <div class="form-group">
+                                    <label for="startDate">Start date</label>
+                                    <div class="input-group mb-2">
+                                        <input type="date" class="form-control" id="startDate" value="2015-01-01">
+                                    </div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="valHorizon">Validation horizon (years)</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" class="form-control" id="valHorizon" value="1">
+                                    </div>
+                                    <small id="valHorizonHelp" class="form-text text-muted">
+                                        Period to evaluate performance. The prior period will be used to calculate
+                                        portfolio
+                                        weights.
+                                    </small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="objective">Objective</label>
+                                    <select class="form-control" id="objective">
+                                        <option value="max_sharpe">Max sharpe ratio</option>
+                                        <option value="min_volatility">Min volatility</option>
+                                    </select>
+                                </div>
+                                <br>
                             </div>
 
                             <button type="submit" class="btn btn-block btn-primary">Optimize portfolio</button>
-
 
                         </form>
 
@@ -190,7 +201,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">
-                        <h2>Summary</h2>
+                        <h2>Performance Summary</h2>
                         <br>
                         <table class="table table-bordered table-sm" id="summaryTable">
                             <thead>
@@ -217,6 +228,18 @@
             </div>
             <!--card-->
 
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h2>Prices</h2>
+                    </div>
+                    <div id="plot_prices">
+                    </div>
+                </div>
+                <!--card-body-->
+            </div>
+            <!--card-->
+
         </div>
         <!--col-->
 
@@ -229,194 +252,235 @@
 
 
 <script>
-
-    function roundToTwo(num) {
-        https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
-            return +(Math.round(num + "e+2") + "e-2");
-    }
+    $(document).ready(function () {
 
 
-    var min_tickers = 2 + 1;
-    var max_tickers = 100; //maximum input boxes allowed
-    var wrapper = $(".ticker-wrap"); //Fields wrapper
-    var add_button = $("#add-ticker"); //Add button ID
-    var n_ticker_inputs = 1; //initial text box count
+        function roundToTwo(num) {
+            https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary
+                return +(Math.round(num + "e+2") + "e-2");
+        }
 
-    add_button.click(function (e) {
-        e.preventDefault();
-        if (n_ticker_inputs < max_tickers) { //max input box allowed
-            n_ticker_inputs++; //text box increment
-            wrapper.append(`
+
+        var min_tickers = 2 + 1;
+        var max_tickers = 100; //maximum input boxes allowed
+        var wrapper = $(".ticker-wrap"); //Fields wrapper
+        var add_button = $("#add-ticker"); //Add button ID
+        var n_ticker_inputs = 1; //initial text box count
+
+        add_button.click(function (e) {
+            e.preventDefault();
+            if (n_ticker_inputs < max_tickers) { //max input box allowed
+                n_ticker_inputs++; //text box increment
+                wrapper.append(`
                 <div class="input-group mb-2">
                     <input type="text" class="form-control ticker-input" name="tickers[]" value="">
                     <a class="btn text-danger remove-ticker" >&times;</a>
                 </div>
             `);
-        }
-    })
-
-    wrapper.on("click", ".remove-ticker", function (e) { //user click on remove text
-        e.preventDefault();
-        $(this).parent('div').remove();
-        n_ticker_inputs--;
-    })
-
-    function writeTable(tableId, tableData, skipFirstHeading = true) {
-        let obj
-
-        let thead = $(tableId + ' thead')
-        obj = tableData[0]
-        let tr = "";
-        let i = 0
-        for (let [key, value] of Object.entries(obj)) {
-            if (!skipFirstHeading || i !== 0) {
-                tr += "<td>" + key + "</td>"
-            } else {
-                tr += "<td></td>"
             }
-            i++;
-        }
-        tr += ""
-        thead.append(tr);
+        })
 
+        wrapper.on("click", ".remove-ticker", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('div').remove();
+            n_ticker_inputs--;
+        })
 
-        let tbody = $(tableId + ' tbody')
-        for (let i = 0; i < tableData.length; i++) {
-            obj = tableData[i]
-            let tr = "<tr>";
+        function writeTable(tableId, tableData, skipFirstHeading = true) {
+            let obj
+
+            let thead = $(tableId + ' thead')
+            obj = tableData[0]
+            let tr = "";
+            let i = 0
             for (let [key, value] of Object.entries(obj)) {
-                tr += "<td>" + value + "</td>"
+                if (!skipFirstHeading || i !== 0) {
+                    tr += "<td>" + key + "</td>"
+                } else {
+                    tr += "<td></td>"
+                }
+                i++;
             }
-            tbody.append(tr);
-        }
-    }
-
-    function unpack(rows, key) {
-        return rows.map(function (row) {
-            return row[key];
-        });
-    }
+            tr += ""
+            thead.append(tr);
 
 
-    var allocationTableBody = $('#allocationTable tbody')
-    var allocationTableHead = $('#allocationTable thead')
-
-    var summaryTableBody = $('#summaryTable tbody')
-    var summaryTableHead = $('#summaryTable thead')
-
-    function clearTables() {
-        allocationTableBody.empty()
-        allocationTableHead.empty()
-        summaryTableHead.empty()
-        summaryTableBody.empty()
-    }
-
-    function runAnalysis() {
-
-        $('#plot_portfolio').empty()
-
-        clearTables()
-        allocationTableBody.append(`<tr><td colspan="3">Loading...</td></tr>`)
-
-        let tickers = [];
-        $(".ticker-input").each(function (index) {
-            let symbol = $(this).val();
-            if (symbol !== "") {
-                tickers.push(symbol);
+            let tbody = $(tableId + ' tbody')
+            for (let i = 0; i < tableData.length; i++) {
+                obj = tableData[i]
+                let tr = "<tr>";
+                for (let [key, value] of Object.entries(obj)) {
+                    tr += "<td>" + value + "</td>"
+                }
+                tbody.append(tr);
             }
-        });
-
-        if (tickers.length < min_tickers) {
-            alert(`Please provide at least ${min_tickers - 1} or more tickers in addition to the benchmark`)
-            return;
-        }
-        let portfolioValue = parseFloat($('#portfolioValue').val());
-        let minPosition = parseFloat($('#minPosition').val());
-        let maxPosition = parseFloat($('#maxPosition').val());
-        let startDate = $('#startDate').val();
-
-        // let horizon = parseInt($('#horizon').val());
-        // let riskHorizon = parseInt($('#riskHorizon').val());
-        // let maxBeta = parseFloat($('#maxBeta').val());
-
-        let parameters = {
-            tickers: tickers,
-            portfolioValue: portfolioValue,
-            minPosition: minPosition,
-            maxPosition: maxPosition,
-            startDate: startDate,
         }
 
-        console.log("parameters")
-        console.log(parameters)
+        function unpack(rows, key) {
+            return rows.map(function (row) {
+                return row[key];
+            });
+        }
 
-        var str_params = $.param(parameters);
-        // let apiURL = 'http://127.0.0.1:8000/portfolio?' + str_params
-        let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
-        $.get(apiURL, function (data) {
+        var allocationTableBody = $('#allocationTable tbody')
+        var allocationTableHead = $('#allocationTable thead')
 
-            clearTables()
-            if (!data['success']) {
-                allocationTableBody.append(`<tr><td colspan="3">Error. ${data['error']}</td></tr>`)
+        var summaryTableBody = $('#summaryTable tbody')
+        var summaryTableHead = $('#summaryTable thead')
+
+        function clearResults() {
+            allocationTableBody.empty()
+            allocationTableHead.empty()
+            summaryTableHead.empty()
+            summaryTableBody.empty()
+            $('#plot_portfolio').empty()
+            $('#plot_prices').empty()
+        }
+
+        function runAnalysis() {
+
+
+            clearResults()
+            allocationTableBody.append(`<tr><td colspan="3">Loading...</td></tr>`)
+
+            let tickers = [];
+            $(".ticker-input").each(function (index) {
+                let symbol = $(this).val();
+                if (symbol !== "") {
+                    tickers.push(symbol);
+                }
+            });
+
+            if (tickers.length < min_tickers) {
+                alert(`Please provide at least ${min_tickers - 1} or more tickers in addition to the benchmark`)
                 return;
             }
-            let summary = JSON.parse(data['summary']);
-            console.log(summary)
-            writeTable('#summaryTable', summary);
+            let portfolioValue = parseFloat($('#portfolioValue').val());
+            let minPosition = parseFloat($('#minPosition').val());
+            let maxPosition = parseFloat($('#maxPosition').val());
+            let startDate = $('#startDate').val();
+            let valHorizon = $('#valHorizon').val();
+            let objective = $('#objective').val();
 
-            let cumReturns = JSON.parse(data['cum_returns'])
-            let prices = JSON.parse(data['prices'])
+            // let maxBeta = parseFloat($('#maxBeta').val());
 
-            let allocation = JSON.parse(data['allocation']['allocation'])
-            writeTable('#allocationTable', allocation);
+            let parameters = {
+                tickers: tickers,
+                portfolioValue: portfolioValue,
+                minPosition: minPosition,
+                maxPosition: maxPosition,
+                startDate: startDate,
+                valHorizon: valHorizon,
+                objective: objective,
+            }
+            console.log("Parameters", parameters)
 
-            let remaining_funds = JSON.parse(data['allocation']['remaining_funds'])
-            allocationTableBody.append(`<tr> <td colspan="5"><em>Remaining funds $${remaining_funds}</em></td></tr>`)
+            var str_params = $.param(parameters);
+            // let apiURL = 'http://127.0.0.1:8000/portfolio?' + str_params
+            let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
-            var data = [
-                {
-                    x: unpack(cumReturns, "Date"),
-                    y: unpack(cumReturns, "Portfolio"),
-                    type: 'scatter',
-                    mode: 'lines',
-                    name: 'Portfolio',
-                    line: {color: '#33b38d'}
-                },
-                {
-                    x: unpack(cumReturns, "Date"),
-                    y: unpack(cumReturns, "Equal Allocation"),
-                    type: 'scatter',
-                    mode: 'lines',
-                    name: 'Equal Allocation',
-                    line: {color: '#17becf'}
-                },
-                {
-                    x: unpack(cumReturns, "Date"),
-                    y: unpack(cumReturns, "Benchmark"),
-                    type: 'scatter',
-                    mode: 'lines',
-                    name: 'Benchmark',
-                    line: {color: '#888888'}
+            $.get(apiURL, function (data) {
+                clearResults()
+
+                if (!data['success']) {
+                    allocationTableBody.append(`<tr><td colspan="3">Error. ${data['error']}</td></tr>`)
+                    return;
                 }
-            ];
-            var layout = {
-                // title: 'Cumulative returns',
-                legend: {"orientation": "h"},
-                yaxis: {title: 'Cumulative return'}
-            };
+                let trainStart = new Date(data['train_start'])
+                let valStart = new Date(data['val_start'])
+                let endDate = new Date(data['end_date'])
 
-            Plotly.newPlot('plot_portfolio', data, layout);
+                // Display summary results
+                let summary = JSON.parse(data['summary']);
+                writeTable('#summaryTable', summary);
+                summaryTableBody.append(`<tr><td colspan="4"><em>Summary based on performance from ${valStart.toLocaleDateString()} to ${endDate.toLocaleDateString()}</em></td></tr>`)
+                console.log("Summary", summary)
+
+                // Display allocation results
+                let allocation = JSON.parse(data['allocation']['allocation'])
+                let remaining_funds = JSON.parse(data['allocation']['remaining_funds'])
+                writeTable('#allocationTable', allocation);
+                allocationTableBody.append(`<tr> <td colspan="5"><em>Remaining funds = $${remaining_funds}</em></td></tr>`)
+                allocationTableBody.append(`<tr><td colspan="5"><em>Portfolio weights calculated using data from ${trainStart.toLocaleDateString()} to ${valStart.toLocaleDateString()}</em></td></tr>`)
+                console.log("Allocation", allocation)
+
+                let cumReturns = JSON.parse(data['cum_returns'])
+                let prices = JSON.parse(data['prices'])
+
+                var data = [
+                    {
+                        x: unpack(cumReturns, "Date"),
+                        y: unpack(cumReturns, "Portfolio"),
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Portfolio',
+                        line: {color: '#33b38d'}
+                    },
+                    {
+                        x: unpack(cumReturns, "Date"),
+                        y: unpack(cumReturns, "Equal Allocation"),
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Equal Allocation',
+                        line: {color: '#17becf'}
+                    },
+                    {
+                        x: unpack(cumReturns, "Date"),
+                        y: unpack(cumReturns, "Benchmark"),
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Benchmark',
+                        line: {color: '#888888'}
+                    }
+                ];
+                var portfolioPlotLayout = {
+                    // title: 'Cumulative returns',
+                    legend: {orientation: "h", x: 0, y: 1},
+                    yaxis: {title: 'Portfolio value ($)'},
+                    margin: {r: 0, t: 0}
+                };
+
+                Plotly.newPlot('plot_portfolio', data, portfolioPlotLayout);
+
+                var pricePlotData = []
+                for (let t of tickers) {
+                    pricePlotData.push(
+                        {
+                            x: unpack(prices, "Date"),
+                            y: unpack(prices, t),
+                            type: 'scatter',
+                            mode: 'lines',
+                            name: t,
+                        }
+                    )
+                }
+
+                var pricePlotLayout = {
+                    legend: {orientation: "h", x: 0, y: 1},
+                    // legend: {"orientation": "h"},
+                    yaxis: {title: 'Close ($)'},
+                    margin: {r: 0, t: 0}
+                };
+
+                Plotly.newPlot('plot_prices', pricePlotData, pricePlotLayout);
+
+            })
+
+        }
+
+        $("#showAdvancedParams").click(function () {
+            $("#showText").text(($("#showText").text() == 'Show') ? 'Hide' : 'Show');
         })
 
 
-    }
+        $("#paramForm").on('submit', function (e) {
+            e.preventDefault();
+            runAnalysis();
+        })
 
-
-    $("#paramForm").on('submit', function (e) {
-        e.preventDefault();
-        runAnalysis();
     })
+
 
 </script>
 
