@@ -153,7 +153,24 @@
                                     <select class="form-control" id="objective">
                                         <option value="max_sharpe">Max sharpe ratio</option>
                                         <option value="min_volatility">Min volatility</option>
+                                        <option value="efficient_risk">Efficient risk</option>
+                                        <option value="efficient_return">Efficient return</option>
                                     </select>
+                                </div>
+
+                                <div class="form-group" id="targetReturnDiv" style="display:none;">
+                                    <label for="targetReturn">Target annual return</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" step="0.01" class="form-control" id="targetReturn"
+                                               value="0.1">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="targetVolatilityDiv" style="display:none;">
+                                    <label for="targetReturn">Target annual volatility</label>
+                                    <div class="input-group mb-2">
+                                        <input type="number" step="0.01" class="form-control" id="targetVolatility"
+                                               value="0.2">
+                                    </div>
                                 </div>
                                 <br>
                             </div>
@@ -360,8 +377,10 @@
             let minPosition = parseFloat($('#minPosition').val());
             let maxPosition = parseFloat($('#maxPosition').val());
             let startDate = $('#startDate').val();
-            let valHorizon = $('#valHorizon').val();
+            let valHorizon = parseInt($('#valHorizon').val());
             let objective = $('#objective').val();
+            let targetVolatility = parseFloat($('#targetVolatility').val());
+            let targetReturn = parseFloat($('#targetReturn').val());
 
             // let maxBeta = parseFloat($('#maxBeta').val());
 
@@ -373,6 +392,8 @@
                 startDate: startDate,
                 valHorizon: valHorizon,
                 objective: objective,
+                targetReturn: targetReturn,
+                targetVolatility: targetVolatility,
             }
             console.log("Parameters", parameters)
 
@@ -472,6 +493,20 @@
         $("#showAdvancedParams").click(function () {
             $("#showText").text(($("#showText").text() == 'Show') ? 'Hide' : 'Show');
         })
+
+        $('#objective').on('change', function() {
+            if(this.value == "efficient_risk")
+            {
+                $("#targetVolatilityDiv").show();
+                $("#targetReturnDiv").hide();
+            } else if (this.value == "efficient_return")  {
+                $("#targetVolatilityDiv").hide();
+                $("#targetReturnDiv").show();
+            } else {
+                $("#targetVolatilityDiv").hide();
+                $("#targetReturnDiv").hide();
+            }
+        });
 
 
         $("#paramForm").on('submit', function (e) {
