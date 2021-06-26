@@ -10,11 +10,18 @@
 
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
-.btn-outline-primary:active {
+.btn-outline-primary:active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.show>.btn-outline-primary.dropdown-toggle
+{
     color: white;
     border-color: #33b38d;
     background: #33b38d;
+    box-shadow: 0 0 0 0.2rem rgb(51, 179, 141);
 }
+
 
 .year-row {
     background-color: #e6e6e6;
