@@ -28,7 +28,7 @@
 <div class="container">
     <div class="jumbotron">
         <p class="float-right">
-            <a class="btn btn-primary" href="etfs.html">US/UK ETFs</a>
+            <a class="btn btn-link" href="etfs.html">US/UK ETFs</a>
             <a class='btn btn-outline-success' href="index.html">raadk.com</a>
         </p>
         <h1>Portfolio optimization</h1>
@@ -73,29 +73,38 @@
                                 </div>
                                 <br>
                                 <p class="text-muted">Portfolio</p>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="GOOG">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="AAPL">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="INTC">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="PFE">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="NLY">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
-                                </div>
-                                <div class="input-group mb-2">
-                                    <input type="text" class="form-control ticker-input" name="tickers[]" value="SCI">
-                                    <a class="btn text-danger remove-ticker">&times;</a>
+                                <div class="portfolio-tickers">
+
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="GOOG">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="AAPL">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="INTC">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="PFE">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="NLY">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control ticker-input" name="tickers[]"
+                                               value="SCI">
+                                        <a class="btn text-danger remove-ticker">&times;</a>
+                                    </div>
                                 </div>
                             </div>
                             <button class="btn btn-sm btn-secondary" id="add-ticker">+ Add</button>
@@ -289,20 +298,24 @@
 
         var min_tickers = 2 + 1;
         var max_tickers = 100; //maximum input boxes allowed
-        var wrapper = $(".ticker-wrap"); //Fields wrapper
+        var wrapper = $(".portfolio-tickers"); //Fields wrapper
         var add_button = $("#add-ticker"); //Add button ID
         var n_ticker_inputs = 1; //initial text box count
+
+        function addTickerInputGroup(value = "") {
+            wrapper.append(`
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control ticker-input" name="tickers[]" value="${value}">
+                    <a class="btn text-danger remove-ticker" >&times;</a>
+                </div>
+            `)
+        }
 
         add_button.click(function (e) {
             e.preventDefault();
             if (n_ticker_inputs < max_tickers) { //max input box allowed
                 n_ticker_inputs++; //text box increment
-                wrapper.append(`
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control ticker-input" name="tickers[]" value="">
-                    <a class="btn text-danger remove-ticker" >&times;</a>
-                </div>
-            `);
+                addTickerInputGroup();
             }
         })
 
@@ -364,6 +377,52 @@
             $('#plot_prices').empty()
         }
 
+
+        function loadFromQueryString() {
+            let params = (new URL(document.location)).searchParams;
+            if (params.toString() === "") {
+                return;
+            }
+
+            $('.portfolio-tickers').empty()
+
+
+            let tickers = params.getAll("tickers[]");
+            $('#ticker').val(tickers[0])
+            tickers.shift();
+
+            for (const t of tickers) {
+                addTickerInputGroup(t);
+            }
+
+            let portfolioValue = params.get('portfolioValue');
+            $('#portfolioValue').val(portfolioValue)
+
+            let minPosition = params.get('minPosition');
+            $('#minPosition').val(minPosition)
+
+            let maxPosition = params.get('maxPosition');
+            $('#maxPosition').val(maxPosition)
+
+            let startDate = params.get('startDate')
+            $('#startDate').val(startDate)
+
+            let valHorizon = params.get('valHorizon')
+            $('#valHorizon').val(valHorizon)
+
+            let objective = params.get('objective')
+            $('#objective').val(objective)
+
+            let targetVolatility = params.get('targetVolatility')
+            $('#targetVolatility').val(targetVolatility)
+
+            let targetReturn = params.get('targetReturn')
+            $('#targetReturn').val(targetReturn)
+        }
+
+        loadFromQueryString()
+
+
         function runAnalysis() {
 
 
@@ -407,6 +466,9 @@
             console.log("Parameters", parameters)
 
             var str_params = $.param(parameters);
+            var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + str_params;
+            window.history.pushState({path: newurl}, '', newurl);
+
             // let apiURL = 'http://127.0.0.1:8000/portfolio?' + str_params
             let apiURL = 'http://46.101.78.204:89/portfolio?' + str_params
 
