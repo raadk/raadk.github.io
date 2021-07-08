@@ -205,6 +205,7 @@ async function prepareData(window_size, horizon) {
     if (rawData === undefined) {
         let errorMessage = 'Please upload a CSV file'
         alert(errorMessage)
+        removeLoadingMessage()
         throw new Error(errorMessage);
     }
 
@@ -212,6 +213,7 @@ async function prepareData(window_size, horizon) {
     if (label_col === 'NA') {
         let errorMessage = 'Please select the label column'
         alert(errorMessage)
+        removeLoadingMessage()
         throw new Error(errorMessage);
     }
     values = rawData.map(r => parseFloat(r[label_col]));
