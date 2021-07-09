@@ -44,3 +44,32 @@ table {
 .card {
     margin-bottom: 10px;
 }
+
+
+.workouts .jumbotron {
+    background-color: transparent;
+    padding: 20px 0 0px 0;
+}
+
+.workouts ol {
+    padding: 20px;
+}
+
+.workouts ol li {
+    margin-bottom: 15px;
+}
+.workouts .card-body {
+    padding-bottom: 0;
+}
+
+.workouts .card {
+    margin-bottom: 10px;
+    min-width: 200px;
+}
+.workouts .workout-day {
+    margin-bottom: 20px;
+}
+
+.workouts .workout {
+    margin-bottom: 50px;
+}

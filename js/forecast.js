@@ -3,16 +3,16 @@ Inspired by https://github.com/jinglescode/time-series-forecasting-tensorflowjs
  */
 
 let features = [];
-let features_dates = [];
+let featuresDates = [];
 let labels = [];
-let labels_dates = [];
+let labelsDates = [];
 
 let plotLayout = {margin: {t: 0, r: 0}, legend: {orientation: "h", x: 0, y: 1}};
 
 // let label_col = 'AAPL.Close';
 // let date_col = 'Date';
 let non_overlapping = true;
-let lossDigits = 4;
+let round_digits = 4;
 let horizon;
 let window_size;
 let train_prop;
@@ -21,7 +21,9 @@ let learning_rate;
 let n_layers;
 
 
+let forecastTableId = '#forecast_table';
 let dataTableId = '#data_table';
+let metricsTableId = '#metrics_table';
 let labelColInput = document.getElementById('label_col');
 let dateColInput = document.getElementById('date_col');
 let divLog = document.getElementById("div_log")
@@ -32,12 +34,18 @@ let divPlotTrainForecast = document.getElementById('div_plot_train_forecast');
 let divPlotForecast = document.getElementById('div_plot_forecast');
 let submitButton = document.getElementById('submit_button');
 
-let train_losses = []
-let val_losses = []
+let trainLosses = []
+let valLosses = []
 
 var rawData;
 var values;
 var dates;
+
+
+function activateTab(tab) {
+    $('.nav-pills a[href="#' + tab + '"]').tab('show');
+};
+
 
 function clearResults() {
     divLog.innerHTML = ''
@@ -48,6 +56,12 @@ function clearResults() {
 
     divPlotTrainForecast.innerHTML = ''
     divPlotForecast.innerHTML = ''
+
+    $(forecastTableId + ' thead').empty()
+    $(forecastTableId + ' tbody').empty()
+
+    $(metricsTableId + ' thead').empty()
+    $(metricsTableId + ' tbody').empty()
 }
 
 function setLoadingMessage() {
@@ -58,6 +72,36 @@ function setLoadingMessage() {
 function removeLoadingMessage() {
     submitButton.innerHTML = 'Train model'
     submitButton.disabled = false;
+}
+
+
+function writeTable(tableId, tableData, skipFirstHeading = false) {
+    let obj
+
+    let thead = $(tableId + ' thead')
+    obj = tableData[0]
+    let tr = "";
+    let i = 0
+    for (let [key, value] of Object.entries(obj)) {
+        if (!skipFirstHeading || i !== 0) {
+            tr += "<td>" + key + "</td>"
+        } else {
+            tr += "<td></td>"
+        }
+        i++;
+    }
+    tr += ""
+    thead.append(tr);
+
+    let tbody = $(tableId + ' tbody')
+    for (let i = 0; i < tableData.length; i++) {
+        obj = tableData[i]
+        let tr = "<tr>";
+        for (let [key, value] of Object.entries(obj)) {
+            tr += "<td>" + value + "</td>"
+        }
+        tbody.append(tr);
+    }
 }
 
 
@@ -167,15 +211,18 @@ function unNormalizeTensor(tensor, maxval, minval) {
 let callback = function (epoch, log) {
     let logHtml = divLog.innerHTML;
     logHtml = `
-       <div><small>Epoch: ${epoch + 1}/${n_epochs}, Loss: ${log.loss.toFixed(lossDigits)}</small></div>
+       <div><small>Epoch: ${epoch + 1}/${n_epochs}, Loss: ${log.loss.toFixed(round_digits)}</small></div>
     ` + logHtml;
 
-    train_losses.push(log.loss);
+    trainLosses.push(log.loss);
     divLog.innerHTML = logHtml;
+    if (epoch === 1 || ((n_epochs < 2) && ((epoch + 1) === n_epochs))) {
+        activateTab('forecast');
+    }
 
     Plotly.newPlot(divPlotLoss, [{
-        x: Array.from({length: train_losses.length}, (v, k) => k + 1),
-        y: train_losses,
+        x: Array.from({length: trainLosses.length}, (v, k) => k + 1),
+        y: trainLosses,
         name: "Final model"
     }], plotLayout);
 };
@@ -185,18 +232,18 @@ let trainCallback = function (epoch, log) {
     logHtml = `
        <div><small>
        Epoch: ${epoch + 1}/${n_epochs},
-       Train Loss: ${log.loss.toFixed(lossDigits)},
-       Val Loss: ${log.val_loss.toFixed(lossDigits)}
+       Train Loss: ${log.loss.toFixed(round_digits)},
+       Val Loss: ${log.val_loss.toFixed(round_digits)}
        </small></div>
     ` + logHtml;
 
-    train_losses.push(log.loss);
-    val_losses.push(log.val_loss);
+    trainLosses.push(log.loss);
+    valLosses.push(log.val_loss);
     divTrainLog.innerHTML = logHtml;
-    let xAxis = Array.from({length: train_losses.length}, (v, k) => k + 1);
+    let xAxis = Array.from({length: trainLosses.length}, (v, k) => k + 1);
     Plotly.newPlot(divPlotTrainLoss, [
-        {x: xAxis, y: train_losses, name: "Train loss"},
-        {x: xAxis, y: val_losses, name: "Val loss"},
+        {x: xAxis, y: trainLosses, name: "Train loss"},
+        {x: xAxis, y: valLosses, name: "Val loss"},
     ], plotLayout);
 };
 
@@ -228,9 +275,9 @@ async function prepareData(window_size, horizon) {
 
 
     features = []
-    features_dates = []
+    featuresDates = []
     labels = []
-    labels_dates = []
+    labelsDates = []
     let n_rows = values.length;
     let window_start, window_end, label_start, label_end,
         row_features, row_labels, row_features_dates, row_labels_dates;
@@ -249,9 +296,9 @@ async function prepareData(window_size, horizon) {
         row_labels_dates = dates.slice(label_start, label_end)
 
         features.push(row_features)
-        features_dates.push(row_features_dates)
+        featuresDates.push(row_features_dates)
         labels.push(row_labels)
-        labels_dates.push(row_labels_dates)
+        labelsDates.push(row_labels_dates)
 
         if (non_overlapping) {
             i += horizon;
@@ -261,13 +308,25 @@ async function prepareData(window_size, horizon) {
     }
 }
 
-async function runAnalysis() {
-    clearResults()
-    setLoadingMessage()
+$("#showAdvancedParams").click(function () {
+    $("#showText").text(($("#showText").text() == 'Show') ? 'Hide' : 'Show');
+})
 
-    // let df = await dfd.read_csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv")
-    // let values = df[label_col].data
-    // let dates = df[date_col].data
+async function errorMetrics(yTrue, yPred, label) {
+    let yTrueT = tf.tensor(yTrue)
+    let yPredT = tf.tensor(yPred)
+    let rmse = await yTrueT.sub(yPredT).square().sum().div(tf.scalar(yPred.length)).sqrt().data()
+    rmse = rmse[0]
+    let mae = await yTrueT.sub(yPredT).abs().sum().div(tf.scalar(yPred.length)).data()
+    mae = mae[0]
+    // let mae = await yTrueT.sub(yPredT).square().sum().div(tf.scalar(yPred.length)).sqrt().data()[0]
+    return {"": label, "RMSE": rmse.toFixed(round_digits), "MAE": mae.toFixed(round_digits)}
+}
+
+async function runAnalysis() {
+    setLoadingMessage();
+    clearResults();
+    activateTab('train');
 
     horizon = parseInt($('#horizon').val());
     window_size = parseInt($('#window_size').val());
@@ -282,13 +341,13 @@ async function runAnalysis() {
     let n = features.length
     let train_end = Math.floor(train_prop * n)
 
-    let X_train = features.slice(0, train_end)
-    let y_train = labels.slice(0, train_end)
-    let dates_train = labels_dates.slice(0, train_end)
+    let XTrain = features.slice(0, train_end)
+    let yTrain = labels.slice(0, train_end)
+    let datesTrain = labelsDates.slice(0, train_end)
 
-    let X_val = features.slice(train_end, n)
-    let y_val = labels.slice(train_end, n)
-    let dates_val = labels_dates.slice(train_end, n)
+    let XVal = features.slice(train_end, n)
+    let yVal = labels.slice(train_end, n)
+    let datesVal = labelsDates.slice(train_end, n)
 
     let trainArgs = {
         window_size: window_size,
@@ -297,12 +356,16 @@ async function runAnalysis() {
         learning_rate: learning_rate,
         n_layers: n_layers,
     }
-    train_losses = []
-    val_losses = []
-    let model_train = await fit(features, labels, trainCallback, trainArgs, X_val, y_val);
-    let preds_train = makePredictions(X_train, model_train['model'], model_train['normalize']);
-    let preds_val = makePredictions(X_val, model_train['model'], model_train['normalize']);
+    trainLosses = []
+    valLosses = []
+    let modelTrain = await fit(features, labels, trainCallback, trainArgs, XVal, yVal);
 
+    let predsTrain = makePredictions(XTrain, modelTrain['model'], modelTrain['normalize']);
+    let trainMetrics = await errorMetrics(yTrain.flat(), predsTrain, 'Train')
+
+    let predsVal = makePredictions(XVal, modelTrain['model'], modelTrain['normalize']);
+    let valMetrics = await errorMetrics(yVal.flat(), predsVal, 'Val')
+    writeTable(metricsTableId, [trainMetrics, valMetrics])
 
     let pointSize = 4;
     let lineWidth = 2;
@@ -312,31 +375,37 @@ async function runAnalysis() {
 
     Plotly.newPlot(divPlotTrainForecast, [
         {
-            x: dates_train.flat(), y: y_train.flat(), name: "Actual (train)", mode: mode,
+            x: datesTrain.flat(), y: yTrain.flat(), name: "Actual (train)", mode: mode,
             marker: {size: pointSize, color: actualsColor}, line: {width: lineWidth, color: actualsColor},
         },
         {
-            x: dates_train.flat(), y: preds_train, name: "Prediction (train)", mode: mode,
+            x: datesTrain.flat(), y: predsTrain, name: "Prediction (train)", mode: mode,
             marker: {size: pointSize, color: predsColor}, line: {width: lineWidth, color: predsColor}
         },
         {
-            x: dates_val.flat(), y: y_val.flat(), name: "Actual (val)", mode: mode,
+            x: datesVal.flat(), y: yVal.flat(), name: "Actual (val)", mode: mode,
             marker: {size: pointSize, color: actualsColor}, line: {width: lineWidth, color: actualsColor},
         },
         {
-            x: dates_val.flat(), y: preds_val, name: "Prediction (val)", mode: mode,
+            x: datesVal.flat(), y: predsVal, name: "Prediction (val)", mode: mode,
             marker: {size: pointSize, color: predsColor}, line: {width: lineWidth, color: predsColor},
         },
     ], {margin: {t: 0, r: 0}, legend: {orientation: "h", x: 0, y: 1}});
 
 
     // Full model
-    train_losses = []
+    trainLosses = []
     let model = await fit(features, labels, callback, trainArgs);
 
     // Out-of-sample forecasts
     let X_oos = [values.slice(-window_size)];
     let preds = makePredictions(X_oos, model['model'], model['normalize']);
+
+    let predsTableValues = {}
+    for (let i = 0; i < preds.length; i++) {
+        predsTableValues[`T + ${i + 1}`] = preds[i].toFixed(round_digits)
+    }
+    writeTable(forecastTableId, [predsTableValues]);
 
     let plotHistory = 30
     let plotValues = values.slice(-plotHistory)
@@ -379,82 +448,67 @@ function resetOptionInputs() {
     dateColInput.add(new Option(defaultOption, defaultOption, true))
 }
 
-function writeTable(tableId, tableData, skipFirstHeading = false) {
-    let obj
-
-    let thead = $(tableId + ' thead')
-    obj = tableData[0]
-    let tr = "";
-    let i = 0
-    for (let [key, value] of Object.entries(obj)) {
-        if (!skipFirstHeading || i !== 0) {
-            tr += "<td>" + key + "</td>"
-        } else {
-            tr += "<td></td>"
-        }
-        i++;
-    }
-    tr += ""
-    thead.append(tr);
-
-
-    let tbody = $(tableId + ' tbody')
-    for (let i = 0; i < tableData.length; i++) {
-        obj = tableData[i]
-        let tr = "<tr>";
-        for (let [key, value] of Object.entries(obj)) {
-            tr += "<td>" + value + "</td>"
-        }
-        tbody.append(tr);
-    }
-}
-
 function emptyTable() {
     $(dataTableId + ' thead').empty()
     $(dataTableId + ' tbody').empty()
 }
 
+
+function parseComplete(results) {
+    let colNames = results.meta.fields;
+    let labelOptions = labelColInput.options;
+    let dateOptions = dateColInput.options;
+
+    let tableColumns = []
+    colNames.forEach(function (col) {
+        labelOptions.add(new Option(col, col, false))
+        dateOptions.add(new Option(col, col, false))
+        tableColumns.push({data: col})
+    })
+    if (colNames.length > 1) {
+        $(dateColInput).val(colNames[0]);
+        $(labelColInput).val(colNames[1]);
+    } else {
+        $(labelColInput).val(colNames[0]);
+    }
+
+    rawData = results.data;
+
+    writeTable(dataTableId, rawData.slice(0, 20))
+    activateTab('data');
+    // console.log(results)
+}
+
+
 $('#file').change(function (e) {
     resetOptionInputs();
     emptyTable();
-
     rawData = [];
     let file = document.getElementById('file').files[0];
     Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         dynamicTyping: true,
-        complete: function (results) {
-            let colNames = results.meta.fields;
-            let labelOptions = labelColInput.options;
-            let dateOptions = dateColInput.options;
-
-            let tableColumns = []
-            colNames.forEach(function (col) {
-                labelOptions.add(new Option(col, col, false))
-                dateOptions.add(new Option(col, col, false))
-                tableColumns.push({data: col})
-            })
-
-            rawData = results.data;
-
-            writeTable(dataTableId, rawData.slice(0, 20))
-            // $(dataTableId).DataTable( {
-            //     data: rawData.slice(0, 100),
-            //     columns: tableColumns,
-            //     retrieve: true,
-            //     paging: true,
-            // } );
-            // console.log(results)
-        }
+        complete: parseComplete,
     })
 });
 
+$('#use_example').click(function (e) {
+    e.preventDefault();
+    resetOptionInputs();
+    emptyTable();
+    rawData = [];
+    let filePath = 'https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv'
+    Papa.parse(filePath, {
+        header: true,
+        download: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+        complete: parseComplete,
+    })
+})
 
 $("#paramForm").on('submit', function (e) {
     e.preventDefault();
     runAnalysis();
 })
-
-// runAnalysis();
-
