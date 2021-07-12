@@ -15,7 +15,6 @@ const loadModel = async () => {
 
     // model = await tf.loadGraphModel(MOBILENET_MODEL_PATH, {fromTFHub: true});
     // model = await tf.loadLayersModel(MOBILENET_MODEL_PATH);
-    console.log('layers')
     model = await tf.loadLayersModel(MOBILENET_MODEL_PATH);
     status('Loaded model');
 
@@ -45,15 +44,13 @@ async function predict(imgElement, imgPreviewElement) {
     const logits = tf.tidy(() => {
         const img = tf.cast(tf.browser.fromPixels(imgElement), 'float32');
 
-        const batched = img.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-        /*
+        // const batched = img.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
         const offset = tf.scalar(127.5);
         // Normalize the image from [0, 255] to [-1, 1].
         const normalized = img.sub(offset).div(offset);
 
         // Reshape to a single-element batch so we can pass it to predict.
         const batched = normalized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
-         */
 
         startTime2 = performance.now();
         // Make a prediction through mobilenet.
