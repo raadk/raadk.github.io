@@ -42,7 +42,8 @@ async function predict(imgElement, imgPreviewElement) {
     // includes only the predict() call.
     let startTime2;
     const logits = tf.tidy(() => {
-        const img = tf.cast(tf.browser.fromPixels(imgElement), 'float32');
+        const img = tf.cast(tf.browser.fromPixels(imgElement).resizeNearestNeighbor([IMAGE_SIZE, IMAGE_SIZE]), 'float32');
+        // const img = tf.cast(tf.browser.fromPixels(imgElement), 'float32');
 
         // const batched = img.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
         const offset = tf.scalar(127.5);
@@ -50,7 +51,7 @@ async function predict(imgElement, imgPreviewElement) {
         const normalized = img.sub(offset).div(offset);
 
         // Reshape to a single-element batch so we can pass it to predict.
-        const batched = normalized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
+        let batched = normalized.reshape([1, IMAGE_SIZE, IMAGE_SIZE, 3]);
 
         startTime2 = performance.now();
         // Make a prediction through mobilenet.
@@ -148,8 +149,8 @@ filesElement.addEventListener('change', evt => {
 
             let img = document.createElement('img');
             img.src = e.target.result;
-            img.width = IMAGE_SIZE;
-            img.height = IMAGE_SIZE;
+            // img.width = IMAGE_SIZE;
+            // img.height = IMAGE_SIZE;
             img.onload = () => predict(img, img_preview);
         };
 
