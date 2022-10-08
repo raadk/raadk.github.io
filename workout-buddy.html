@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Raad K">
+    <meta name="description"
+          content="Find UK equivalents of popular US ETFs">
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <title>Workout Buddy - raadk.com</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="css/dashboard_styles.css">
+
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/landmark_grid.css" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.css" crossorigin="anonymous">
+
+<!--    <link rel="stylesheet" type="text/css" href="demo.css" crossorigin="anonymous">-->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils_3d@0.2/control_utils_3d.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.4/pose.js" crossorigin="anonymous"></script>
+
+
+
+</head>
+<body>
+<style>
+    .square-box {
+        width: 33%;
+        height: 0;
+        padding-top: 33%;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+
+    .landmark-grid-container {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top:0;
+        left:0;
+        background-color: #99999999;
+    }
+
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .abs {
+        position: absolute;
+    }
+
+    a {
+        color: white;
+        text-decoration: none;
+    }
+    a:hover {
+         color: lightblue;
+    }
+
+    /*body {*/
+    /*    bottom: 0;*/
+    /*    font-family: 'Titillium Web', sans-serif;*/
+    /*    color: white;*/
+    /*    left: 0;*/
+    /*    margin: 0;*/
+    /*    position: absolute;*/
+    /*    right: 0;*/
+    /*    top: 0;*/
+    /*    transform-origin: 0px 0px;*/
+    /*    overflow: hidden;*/
+    /*}*/
+
+    /*.container {*/
+    /*    position: absolute;*/
+    /*    background-color: #596e73;*/
+    /*    width: 100%;*/
+    /*    max-height: 100%;*/
+    /*}*/
+
+    .input_video {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+    .input_video.selfie {
+         transform: scale(-1, 1);
+    }
+
+    .input_image {
+        position: absolute;
+    }
+
+    .canvas-container {
+        display:flex;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items:center;
+    }
+
+    .output_canvas {
+        width: 100%;
+        display: block;
+        position: relative;
+        left: 0;
+        top: 0;
+    }
+
+
+    .control-panel {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+    }
+
+    .loading {
+        display: flex;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        align-items: center;
+        backface-visibility: hidden;
+        justify-content: center;
+        opacity: 1;
+        transition: opacity 1s;
+    }
+
+    .loading .message {
+        font-size: x-large;
+    }
+
+    .loading .spinner {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        animation: spin 1s linear infinite;
+        border: 32px solid #bebebe;
+        border-top: 32px solid #3498db;
+        border-radius: 50%;
+    }
+
+
+
+
+</style>
+<div class="container">
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2">
+                <p class="float-right">
+                    <a class='btn btn-outline-success' href="index.html">raadk.com</a>
+                </p>
+                <h1>Workout Buddy</h1>
+                <p class="text-small"><small><span class="text-danger">Use at your own risk.</span> </small></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+<!--        <div class="col-xs-12 col-md-8 offset-md-2">-->
+        <div class="col-12">
+            <div class="container">
+                <video class="input_video"></video>
+                <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div class="message"></div>
+                </div>
+            </div>
+            <div class="control-panel">
+            </div>
+            <div class='square-box'>
+                <div class="landmark-grid-container">
+                </div>
+            </div>
+        </div>
+        <!--col-->
+    </div>
+    <!--row-->
+
+    <p class="text-muted text-center"><small>Copyright &copy; 2021 Raad K</small></p>
+</div>
+<!--container-->
+<script src="js/workout-buddy.js"></script>
+
+</body>
+
+</html>
